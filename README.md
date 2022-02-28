@@ -3,6 +3,7 @@
 Inventory helps anyone who's long on stuff and short on memory keep track of what they have and where. To see a demo account with seeded example items, visit https://inventory-app-jh.herokuapp.com/ and use the credentials below.
 
 Email: demoaccount@notarealemail.com
+
 Password: u2cy8qvd
 
 ![image](https://drive.google.com/uc?id=1tcZiBgY31k3H2lguftTvfQRgRHCMqcJZ)
