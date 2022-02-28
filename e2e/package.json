@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "inventory-app-e2e",
+  "name": "inventoryapp-e2e",
   "version": "0.0.1",
   "scripts": {
     "e2e:open": "NODE_ENV=e2e ./node_modules/.bin/cypress open",

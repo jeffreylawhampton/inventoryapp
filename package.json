@@ -7,14 +7,14 @@
     "e2e"
   ],
   "scripts": {
-    "build:client": "yarn workspace inventory-app-client build",
-    "dev": "yarn workspace inventory-app-server dev",
-    "dev:debug": "yarn workspace inventory-app-server dev:debug",
-    "heroku-postbuild": "yarn workspace inventory-app-client build",
-    "start": "yarn workspace inventory-app-server start",
-    "dev:cypress": "yarn workspace inventory-app-server dev:e2e",
-    "e2e:open": "yarn workspace inventory-app-e2e e2e:open",
-    "e2e:run": "yarn workspace inventory-app-e2e e2e:run"
+    "build:client": "yarn workspace inventoryapp-client build",
+    "dev": "yarn workspace inventoryapp-server dev",
+    "dev:debug": "yarn workspace inventoryapp-server dev:debug",
+    "heroku-postbuild": "yarn workspace inventoryapp-client build",
+    "start": "yarn workspace inventoryapp-server start",
+    "dev:cypress": "yarn workspace inventoryapp-server dev:e2e",
+    "e2e:open": "yarn workspace inventoryapp-e2e e2e:open",
+    "e2e:run": "yarn workspace inventoryapp-e2e e2e:run"
   },
   "engines": {
     "node": "^14.15",

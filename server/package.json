@@ -20,7 +20,7 @@
   "private": true,
   "type": "module",
   "version": "0.0.1",
-  "name": "inventory-app-server",
+  "name": "inventoryapp-server",
   "engines": {
     "node": "^14.15"
   },

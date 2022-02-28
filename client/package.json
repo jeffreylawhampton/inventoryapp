@@ -5,7 +5,7 @@
   },
   "license": "UNLICENSED",
   "private": true,
-  "name": "inventory-app-client",
+  "name": "inventoryapp-client",
   "version": "0.0.1",
   "engines": {
     "node": "^14.15"
