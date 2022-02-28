@@ -1,0 +1,546 @@
+@import "./foundation/settings";
+@import "~foundation-sites/scss/foundation";
+@import "./topbar.scss";
+@import "./forms.scss";
+@import "./accordion.scss";
+@import "./landingpage.scss";
+@include foundation-everything;
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap");
+// place global css here
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+:root {
+  -moz-tab-size: 4;
+  tab-size: 4;
+  --gradient-bg: linear-gradient(to right, #3a506b, #aa748a);
+  --gradient-bg-vertical: linear-gradient(to bottom, #3a506b, #aa748a);
+  --gradienttext: -webkit-linear-gradient(180deg, #3d698f, #c06c84);
+  --gradient2-vertical: linear-gradient(to bottom, #58819d, #b7245c);
+  --gradient2-horizontal: linear-gradient(to right, #58819d, #b7245c);
+  --light-green: #96c0b7;
+  --dark-green: #0b5563;
+  --mauve: #c06c84;
+  --subdued-mauve: #ab969e;
+  --flat-blue: #3a506b;
+  --blue-grey: #475b63;
+  --violet: #462255;
+  --indigo: #134074;
+  --charcoal: #37505c;
+  --purple-navy: #4e598c;
+  --yellow: #fed766;
+  --dark-yellow: #ffba0a;
+  --orange: #ff7f11;
+  --flat-orange: #e67f0d;
+  --blue2: #3a506b;
+  --burnt-orange: #d74e09;
+  --orchid: #d74e09;
+  --red: #d84846;
+  --steel: #58819d;
+  --maroon: #b7245c;
+  --rose: #a2677f;
+  --honey: #f5ad29;
+  --wintergreen: #688d82;
+  --header-pink: #aa748a;
+}
+
+.page-container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 50px 5%;
+  position: relative;
+  height: 90vh;
+  background-color: transparent;
+}
+
+.top-links {
+  display: flex;
+  flex-direction: row;
+  justify-content: start;
+  gap: 15px;
+}
+
+.category.card {
+  height: fit-content;
+  flex-grow: 0.2;
+  flex-shrink: 0;
+  flex-basis: 280px;
+  background: var(--gradient-bg);
+  position: relative;
+  opacity: 100%;
+  border: 0;
+
+  .details {
+    position: absolute;
+    left: 20px;
+    bottom: 20px;
+    text-align: left;
+    max-width: 80%;
+  }
+
+  h2 {
+    color: white;
+    font-size: 1.5rem;
+  }
+  h5 {
+    font-family: "Outfit", Avenir, "Helvetica Neue", sans-serif;
+    font-weight: 300;
+    color: white;
+  }
+}
+
+.category.card:hover {
+  opacity: 95%;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.search-tile {
+  margin-bottom: 15px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  min-height: 80px;
+
+  color: #fff;
+
+  h5 {
+    font-size: 1.3rem;
+    color: #fff;
+    margin-bottom: 0;
+    font-weight: 700;
+    font-family: "Outfit", Avenir, sans-serif;
+  }
+  p {
+    color: #fff;
+    margin-bottom: 0;
+  }
+}
+
+.category.search-tile {
+  flex-wrap: nowrap;
+}
+
+.item-count {
+  font-size: 1.2rem;
+  line-height: 1;
+  margin: 0;
+  flex-basis: 8%;
+  min-width: 70px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+
+  .background {
+    width: 40px;
+    height: 40px;
+    margin: auto;
+    background-color: white;
+    opacity: 20%;
+    border-radius: 50%;
+    vertical-align: middle;
+    position: absolute;
+  }
+}
+
+.item.search-tile {
+  flex-wrap: nowrap;
+  align-items: flex-start;
+  column-gap: 0px;
+  align-items: center;
+  justify-content: start;
+  padding-left: 25px;
+
+  .name {
+    flex-basis: fit-content;
+  }
+  div,
+  h5 {
+    display: inline-block;
+  }
+
+  div:after {
+    content: ">";
+    font-family: "Outfit", sans-serif;
+    font-weight: 700;
+    margin: 0 20px;
+    font-size: 1.4rem;
+    color: white;
+    opacity: 40%;
+  }
+}
+
+.item.search-tile div:last-child::after {
+  content: "";
+}
+
+.item-location {
+  h5 {
+    font-weight: 400;
+    letter-spacing: -0.5px;
+    margin-top: 2px;
+  }
+}
+
+.item-count {
+  font-size: 1.2rem;
+  line-height: 1;
+  margin: 0;
+  flex-basis: 8%;
+  min-width: 70px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.room-card {
+  margin-bottom: 15px;
+  border-radius: 4px;
+
+  height: fit-content;
+  background-color: var(--mauve);
+  color: #fff;
+  gap: 20px;
+
+  .item-details {
+    flex-basis: 95%;
+    flex-shrink: 1;
+  }
+
+  .cardlink {
+    display: inline-block;
+  }
+
+  .angle,
+  .arrow-disabled {
+    transition: 350ms;
+    flex-basis: 7%;
+    text-align: center;
+    max-width: 30px;
+    fill: white;
+    opacity: 70%;
+  }
+
+  .angle:hover {
+    opacity: 100%;
+  }
+
+  .arrow-disabled {
+    opacity: 15%;
+  }
+  .angle.down {
+    transform: rotate(90deg);
+    transition: 150ms;
+  }
+  .top-row {
+    display: flex;
+    align-items: center;
+  }
+
+  h4 {
+    font-size: 1.6rem;
+    color: #fff;
+    margin-bottom: 0;
+    font-family: "Outfit", Avenir, sans-serif;
+    font-weight: 500;
+  }
+}
+
+.room-card:hover {
+  background-color: var(--rose);
+  box-shadow: 1px 2px 2px rgba(0, 0, 0, 0.3);
+}
+
+#room-tile-arrow {
+  width: 30px;
+  stroke: black;
+  stroke-width: 4px;
+}
+
+.cardlink {
+  display: block;
+  height: 100%;
+  width: 100%;
+  padding: 10px 30px;
+}
+
+.search-tile:hover {
+  box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.2);
+  opacity: 90%;
+}
+
+div.indigo {
+  background: var(--indigo);
+}
+
+div.yellow {
+  background: var(--honey);
+}
+
+div.purple {
+  background: var(--violet);
+}
+
+div.orange {
+  background: var(--orange);
+}
+
+div.charcoal {
+  background: var(--charcoal);
+}
+div.mauve {
+  background: var(--mauve);
+}
+
+div.green {
+  background: var(--dark-green);
+}
+
+div.wintergreen {
+  background: var(--wintergreen);
+}
+
+div.blue {
+  background: var(--steel);
+}
+div.maroon {
+  background: var(--maroon);
+}
+div.red {
+  background: var(--red);
+}
+
+div.rose {
+  background: var(--rose);
+}
+
+div.gradient {
+  background: var(--gradient-bg);
+}
+div.navy {
+  background: var(--flat-blue);
+}
+div.gray {
+  background: #888;
+}
+.button-group {
+  flex-basis: 100%;
+  margin-top: 20px;
+  column-gap: 10px;
+  flex-wrap: nowrap;
+
+  .button {
+    font-size: 1rem;
+  }
+}
+.button {
+  background: var(--flat-blue);
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 14px 48px;
+  -webkit-transition: background 180ms linear;
+  -moz-transition: background 180ms linear;
+  -o-transition: background 180ms linear;
+  -ms-transition: background 180ms linear;
+  transition: background 180ms linear;
+}
+
+.button:hover {
+  background: var(--indigo);
+}
+
+.button.cancel {
+  background: var(--header-pink);
+  -webkit-transition: background 180ms linear;
+  -moz-transition: background 180ms linear;
+  -o-transition: background 180ms linear;
+  -ms-transition: background 180ms linear;
+  transition: background 180ms linear;
+}
+
+.button.cancel:hover {
+  background: #ab4965;
+}
+
+div.item-list-container {
+  height: calc(60vh);
+
+  h1 {
+    margin-bottom: 20px;
+  }
+}
+
+div.rooms-list {
+  h1 {
+    margin-bottom: 30px;
+  }
+}
+
+.search-container {
+  height: 60vh;
+  overflow-y: scroll;
+  padding-bottom: 70px;
+}
+
+h1.category-name {
+  margin-bottom: 40px;
+}
+
+div.category-container {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: scroll;
+  column-gap: 12px;
+
+  -ms-overflow-style: none; /* for Internet Explorer, Edge */
+  scrollbar-width: none; /* for Firefox */
+  overflow-y: scroll;
+}
+
+div.category-container::-webkit-scrollbar {
+  display: none; /* for Chrome, Safari, and Opera */
+}
+
+.edit-links {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 30px;
+
+  a {
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 0.8rem;
+  }
+}
+
+h1 {
+  font-size: 3.5rem;
+}
+
+.category-link {
+  font-size: 1.3rem;
+  font-family: "Outfit", Avenir, sans-serif;
+  font-weight: 500;
+  color: black;
+}
+
+.mobile-menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: var(--gradient-bg-vertical);
+  z-index: 100;
+  padding: 80px 5%;
+
+  ul {
+    list-style-type: none;
+    margin-left: 0;
+    font-size: 1.3rem;
+    text-align: left;
+
+    li {
+      height: 60px;
+      font-size: 1.2rem;
+    }
+  }
+}
+.breadcrumbs li {
+  font-size: 15px;
+  letter-spacing: normal;
+  text-transform: none;
+  a {
+    text-decoration: none;
+    text-transform: none;
+    color: var(--flat-blue);
+    &:hover {
+      border-bottom: 1px solid currentColor;
+      color: var(--steel);
+      text-decoration: none;
+    }
+  }
+}
+.menu-toggle {
+  z-index: 100;
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  color: white;
+  font-size: 2rem;
+}
+
+#menu-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 30px;
+  height: auto;
+  fill: white;
+}
+
+#menu-open {
+  width: 30px;
+  fill: white;
+}
+
+.top-bar {
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: center;
+
+  .top-bar-left {
+    flex-basis: auto;
+  }
+
+  .top-bar-right {
+    flex-basis: 70%;
+  }
+}
+
+.mobile-menu-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-basis: 15%;
+  text-align: right;
+}
+
+.item-image {
+  width: 100%;
+
+  img {
+    width: 100%;
+    border-radius: 10px;
+  }
+}
+
+@media (max-width: 700px) {
+  h1 {
+    font-size: 2.5rem;
+  }
+
+  .search-tile,
+  .item.search-tile {
+    flex-wrap: wrap;
+    h5 {
+      font-size: 1rem;
+    }
+  }
+
+  .item.search-tile div:after {
+    margin: 0 10px;
+    font-size: 1rem;
+  }
+
+  .search-tile {
+    min-height: 65px;
+    margin-bottom: 10px;
+  }
+}
