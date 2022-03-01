@@ -1,4 +1,3 @@
-import { element } from "prop-types";
 import React, { useState } from "react";
 
 const NewCategoryForm = (props) => {

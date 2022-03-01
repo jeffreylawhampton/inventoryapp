@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Link, Redirect } from "react-router-dom";
-import RoomAccordionTile from "./RoomAccordionTile";
+
+import makeObjectAbc from "../../services/makeOjbectsAbc.js";
 import translateServerErrors from "../../services/translateServerErrors";
+
+import AccordionTile from "./AccordionTile";
 import PlusIcon from "./PlusIcon";
 import SearchForm from "./SearchForm";
-import makeObjectAbc from "../../services/makeOjbectsAbc.js";
 
-const UpdatedRoomsList = (props) => {
+const RoomsList = (props) => {
   const { user } = props;
   const userId = user.id;
   const [formErrors, setFormErrors] = useState([]);
@@ -81,16 +82,6 @@ const UpdatedRoomsList = (props) => {
     setShowNewRoomForm(!showNewRoomForm);
   };
 
-  let iconposition;
-  let formContainerClass;
-  if (showNewRoomForm) {
-    iconposition = "x";
-    formContainerClass = "category-modal fullheight";
-  } else {
-    iconposition = "plus";
-    formContainerClass = "category-modal hiddenheight";
-  }
-
   const handleInputChange = (event) => {
     event.preventDefault();
     setSearchString(event.currentTarget.value);
@@ -140,9 +131,19 @@ const UpdatedRoomsList = (props) => {
     return room.name.toLowerCase().startsWith(searchString.toLowerCase());
   });
 
-  const searchTiles = searchedItems.map((room) => {
-    return <RoomAccordionTile key={room.id} room={room} />;
+  const searchTiles = searchedItems.map((cardObject) => {
+    return (
+      <AccordionTile
+        key={cardObject.id}
+        cardObject={cardObject}
+        parentLink="rooms"
+        colorClass="wintergreen"
+      />
+    );
   });
+
+  let iconposition;
+  showNewRoomForm ? (iconposition = "x") : (iconposition = "plus");
 
   return (
     <div className="item-list-container">
@@ -158,7 +159,7 @@ const UpdatedRoomsList = (props) => {
         <PlusIcon iconPosition={iconposition} />
       </div>
       {showNewRoomForm && (
-        <div className={formContainerClass}>
+        <div className="form-modal">
           <h3>Add a new room</h3>
           <form onSubmit={handleSubmit}>
             <span className="formerror">{formErrors.name}</span>
@@ -182,4 +183,4 @@ const UpdatedRoomsList = (props) => {
   );
 };
 
-export default UpdatedRoomsList;
+export default RoomsList;

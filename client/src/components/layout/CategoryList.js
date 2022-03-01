@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Link, Redirect } from "react-router-dom";
-import CategoryTile from "./CategoryTile";
-import CategoryAccordionTile from "./CategoryAccordionTile";
-import NewCategoryForm from "./NewCategoryForm";
+
 import translateServerErrors from "../../services/translateServerErrors";
 import makeObjectAbc from "../../services/makeOjbectsAbc";
+
+import AccordionTile from "./AccordionTile";
+import NewCategoryForm from "./NewCategoryForm";
 import PlusIcon from "./PlusIcon";
 import SearchForm from "./SearchForm";
 
@@ -80,16 +80,6 @@ const CategoryList = (props) => {
     setShowNewCategoryForm(!showNewCategoryForm);
   };
 
-  let iconposition;
-  let formContainerClass;
-  if (showNewCategoryForm) {
-    iconposition = "x";
-    formContainerClass = "category-modal fullheight";
-  } else {
-    iconposition = "plus";
-    formContainerClass = "category-modal hiddenheight";
-  }
-
   const onInputChange = (event) => {
     event.preventDefault();
     setSearchString(event.currentTarget.value);
@@ -99,9 +89,22 @@ const CategoryList = (props) => {
     return category.name.toLowerCase().startsWith(searchString.toLowerCase());
   });
 
-  const searchTiles = searchedItems.map((category) => {
-    return <CategoryAccordionTile key={category.id} category={category} />;
+  const searchTiles = searchedItems.map((cardObject) => {
+    if (!cardObject.color) {
+      cardObject.color = "gray";
+    }
+    return (
+      <AccordionTile
+        key={cardObject.id}
+        cardObject={cardObject}
+        parentLink="categories"
+        colorClass={cardObject.color}
+      />
+    );
   });
+
+  let iconposition;
+  showNewCategoryForm ? (iconposition = "x") : (iconposition = "plus");
 
   return (
     <div className="item-list-container">
@@ -117,7 +120,7 @@ const CategoryList = (props) => {
         <PlusIcon iconPosition={iconposition} />
       </div>
       {showNewCategoryForm && (
-        <div className={formContainerClass}>
+        <div className="form-modal">
           <NewCategoryForm
             postCategory={postCategory}
             user={user}

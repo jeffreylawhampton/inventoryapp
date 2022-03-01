@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-
 import { withRouter, Redirect, Link } from "react-router-dom";
-import ItemShowEditForm from "./ItemShowEditForm";
-import EditIcon from "./EditIcon";
-import PlusIcon from "./PlusIcon";
+
 import makeObjectAbc from "../../services/makeOjbectsAbc";
+
+import EditIcon from "./EditIcon";
+import ItemShowEditForm from "./ItemShowEditForm";
+import PlusIcon from "./PlusIcon";
 
 const ItemShow = (props) => {
   const itemId = props.match.params.id;
@@ -184,12 +185,6 @@ const ItemShow = (props) => {
   if (shouldRedirect) {
     return <Redirect push to="/items" />;
   }
-  let iconContent;
-  if (showEditForm) {
-    iconContent = <PlusIcon iconPosition="x" />;
-  } else {
-    iconContent = <EditIcon />;
-  }
 
   const colorClass = item.color;
 
@@ -228,9 +223,9 @@ const ItemShow = (props) => {
         )}
 
         <div onClick={editHandler} className="circle-button-container">
-          {iconContent}
+          {showEditForm ? <PlusIcon iconPosition="x" /> : <EditIcon />}
         </div>
-        {showEditForm && (
+        {showEditForm ? (
           <>
             <div className="edit-links">
               <a onClick={deleteHandler}>Delete item</a>
@@ -246,11 +241,8 @@ const ItemShow = (props) => {
               categorySelectors={categorySelectors}
             />
           </>
-        )}
-        {!showEditForm && (
-          <>
-            <p>{item.description}</p>
-          </>
+        ) : (
+          <p>{item.description}</p>
         )}
       </div>
       <div className="item-image cell small-12 medium-6">

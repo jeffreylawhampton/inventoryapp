@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { withRouter, Redirect, Link } from "react-router-dom";
-import ItemTile from "./ItemTile";
-import translateServerErrors from "../../services/translateServerErrors";
+
 import makeObjectAbc from "../../services/makeOjbectsAbc.js";
+
+import ItemTile from "./ItemTile";
 import PlusIcon from "./PlusIcon";
 import SearchForm from "./SearchForm";
 
@@ -18,7 +19,6 @@ const CategoryShow = (props) => {
   const [editedCategory, setEditedCategory] = useState({});
   const [showEditForm, setShowEditForm] = useState(false);
   const [formErrors, setFormErrors] = useState({});
-  const [errors, setErrors] = useState([]);
   const [showItemEditForm, setShowItemEditForm] = useState(false);
   const [shouldRedirect, setShouldRedirect] = useState(false);
   const [searchString, setSearchString] = useState("");
@@ -202,14 +202,7 @@ const CategoryShow = (props) => {
   };
 
   let iconposition;
-  let formContainerClass;
-  if (showItemEditForm) {
-    iconposition = "x";
-    formContainerClass = "category-modal fullheight";
-  } else {
-    iconposition = "plus";
-    formContainerClass = "category-modal hiddenheight";
-  }
+  showItemEditForm ? (iconposition = "x") : (iconposition = "plus");
 
   useEffect(() => {
     fetchUserInfo();
@@ -306,7 +299,7 @@ const CategoryShow = (props) => {
       </div>
 
       {showItemEditForm && (
-        <div className={formContainerClass}>
+        <div className="form-modal">
           <h4>Move an item to {category.name}</h4>
           <form onSubmit={itemSubmitHandler}>
             <select name="id" value={editedItem.id} onChange={itemChangeHandler}>

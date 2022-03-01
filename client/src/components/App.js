@@ -1,20 +1,21 @@
-import React, { useState, useEffect, useReducer } from "react";
-import { BrowserRouter, Switch, Route, Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { BrowserRouter, Switch, Route } from "react-router-dom";
 import { hot } from "react-hot-loader/root";
 
 import getCurrentUser from "../services/getCurrentUser";
 import "../assets/scss/main.scss";
+
+import AuthenticatedRoute from "./authentication/AuthenticatedRoute.js";
 import RegistrationForm from "./registration/RegistrationForm";
 import SignInForm from "./authentication/SignInForm";
-import TopBar from "./layout/TopBar";
-import ItemList from "./layout/ItemList";
 import CategoryList from "./layout/CategoryList";
-import AuthenticatedRoute from "./authentication/AuthenticatedRoute.js";
 import CategoryShow from "./layout/CategoryShow";
-import RoomShow from "./layout/RoomShow";
+import ItemList from "./layout/ItemList";
 import ItemShow from "./layout/ItemShow";
 import LandingPage from "./layout/LandingPage";
-import UpdatedRoomsList from "./layout/UpdatedRoomsList";
+import RoomsList from "./layout/RoomsList";
+import RoomShow from "./layout/RoomShow";
+import TopBar from "./layout/TopBar";
 
 const App = (props) => {
   const [currentUser, setCurrentUser] = useState(null);
@@ -60,7 +61,7 @@ const App = (props) => {
           />
           <AuthenticatedRoute exact path="/items" component={ItemList} user={currentUser} />
           <AuthenticatedRoute exact path="/items/:id" component={ItemShow} user={currentUser} />
-          <AuthenticatedRoute exact path="/rooms" component={UpdatedRoomsList} user={currentUser} />
+          <AuthenticatedRoute exact path="/rooms" component={RoomsList} user={currentUser} />
           <AuthenticatedRoute exact path="/rooms/:id" component={RoomShow} user={currentUser} />
         </Switch>
       </div>

@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import Profile from "./Profile";
-import LoggedOutLandingPage from "./LoggedOutLandingPage";
+
 import makeObjectAbc from "../../services/makeOjbectsAbc.js";
+
 import ItemList from "./ItemList";
+import LoggedOutLandingPage from "./LoggedOutLandingPage";
 
 const LandingPage = (props) => {
   const [items, setItems] = useState([]);
   const [categories, setCategories] = useState([]);
   const [rooms, setRooms] = useState([]);
-  const [currentView, setCurrentView] = useState("items");
 
   let userId;
   let loggedIn = false;
