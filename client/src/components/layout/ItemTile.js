@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-const ItemTile = ({ item, rooms, message }) => {
+const ItemTile = ({ item, rooms, message, room }) => {
   let roomName;
   const currentRoom = rooms.find((e) => e.id === item.roomId);
   if (currentRoom) {
@@ -17,7 +17,7 @@ const ItemTile = ({ item, rooms, message }) => {
   }
   return (
     <Link to={`/items/${item.id}`}>
-      <div className={`item search-tile ${colorClass}`}>
+      <div className={`search-tile ${colorClass}`}>
         <div className="name">
           <h5>{item.name}</h5>
         </div>

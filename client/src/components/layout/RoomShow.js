@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { withRouter, Link, Redirect } from "react-router-dom";
-import RoomItemTile from "./RoomItemTile";
+
+import makeObjectAbc from "../../services/makeOjbectsAbc";
+
 import ItemTile from "./ItemTile";
 import PlusIcon from "./PlusIcon";
-import makeObjectAbc from "../../services/makeOjbectsAbc";
 
 const RoomShow = (props) => {
   const { user } = props;
@@ -36,15 +37,9 @@ const RoomShow = (props) => {
       const body = await response.json();
       const roomList = body.user.rooms;
       const allItems = body.user.items;
-
-      const otherItems = allItems.filter((item) => item.roomId !== roomId);
       setRoomsList(roomList);
       setRoom(roomList.find((room) => room.id === roomId));
-      setRoomItemsList(
-        allItems
-          .filter((item) => item.roomId === roomId)
-          .sort((a, b) => a.name.localeCompare(b.name))
-      );
+      setRoomItemsList(makeObjectAbc(allItems.filter((item) => item.roomId === roomId)));
       setOtherRoomItems(allItems.filter((item) => item.roomId !== roomId));
     } catch (error) {
       console.error(`Error in fetch: ${error.message}`);
@@ -181,14 +176,7 @@ const RoomShow = (props) => {
   };
 
   let iconposition;
-  let formContainerClass;
-  if (showItemEditForm) {
-    iconposition = "x";
-    formContainerClass = "category-modal fullheight";
-  } else {
-    iconposition = "plus";
-    formContainerClass = "category-modal hiddenheight";
-  }
+  showItemEditForm ? (iconposition = "x") : (iconposition = "plus");
 
   useEffect(() => {
     fetchUserInfo();
@@ -199,7 +187,7 @@ const RoomShow = (props) => {
   let subhead;
   if (roomItemsList) {
     roomItemArray = roomItemsList.map((item) => {
-      return <RoomItemTile key={item.id} item={item} room={room} />;
+      return <ItemTile key={item.id} item={item} room={room} rooms={roomsList} />;
     });
     if (!roomItemArray.length) {
       visibleDeleteClass = "";
@@ -257,7 +245,7 @@ const RoomShow = (props) => {
         <PlusIcon iconPosition={iconposition} />
       </div>
       {showItemEditForm && (
-        <div className={formContainerClass}>
+        <div className="form-modal">
           <h3>Move an item to {room.name.toLowerCase()}</h3>
           <form onSubmit={itemSubmitHandler}>
             <select name="id" value={editedItem.id} onChange={itemChangeHandler}>
