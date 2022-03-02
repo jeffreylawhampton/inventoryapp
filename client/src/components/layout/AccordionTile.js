@@ -3,13 +3,11 @@ import { Link } from "react-router-dom";
 
 const AccordionTile = (props) => {
   const { cardObject, parentLink, colorClass } = props;
-
-  let itemCount = 0;
-  if (cardObject.items) {
-    itemCount = cardObject.items.length;
-  }
-
   const [isOpen, setIsOpen] = useState(false);
+
+  let itemCount;
+  cardObject.items ? (itemCount = cardObject.items.length) : 0;
+
   const toggle = () => {
     setIsOpen(!isOpen);
   };

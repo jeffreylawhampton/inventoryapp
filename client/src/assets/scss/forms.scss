@@ -1,3 +1,16 @@
+.modal-background {
+  width: 100vw;
+  height: 100vh;
+  z-index: 97;
+  background: black;
+  opacity: 60%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+}
+
 .form-modal {
   position: fixed;
   left: 60px;
@@ -177,7 +190,6 @@
   display: flex;
   gap: 0px;
   flex-direction: column;
-  padding-bottom: 80px;
 
   .inputgroup {
     display: flex;
@@ -226,19 +238,6 @@
 
 .hidden {
   display: none;
-}
-
-.modal.visible {
-  width: 100vw;
-  height: 100vh;
-  z-index: 97;
-  background: black;
-  opacity: 60%;
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
 }
 
 .form-wrapper {
@@ -341,6 +340,7 @@
     }
   }
   .item-edit-form {
+    padding-bottom: 80px;
     label {
       flex-basis: 100%;
     }

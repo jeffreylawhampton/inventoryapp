@@ -4,7 +4,6 @@ import { Link, Redirect } from "react-router-dom";
 import makeObjectAbc from "../../services/makeOjbectsAbc.js";
 import translateServerErrors from "../../services/translateServerErrors";
 
-import ErrorList from "./ErrorList";
 import ItemTile from "./ItemTile";
 import NewItemForm from "./NewItemForm";
 import PlusIcon from "./PlusIcon";
@@ -47,12 +46,9 @@ const ItemList = ({ user }) => {
         throw error;
       }
       const body = await response.json();
-      const items = makeObjectAbc(body.user.items);
-      const categories = body.user.categories;
-      const rooms = body.user.rooms;
-      setUserItems(items);
-      setUserCategories(categories);
-      setUserRooms(rooms);
+      setUserItems(makeObjectAbc(body.user.items));
+      setUserCategories(body.user.categories);
+      setUserRooms(body.user.rooms);
     } catch (error) {
       console.error(`Error in fetch: ${error.message}`);
     }
@@ -236,14 +232,7 @@ const ItemList = ({ user }) => {
   }, []);
 
   let iconposition;
-  let formContainerClass = "modal";
-  if (showNewItemForm) {
-    iconposition = "x";
-    formContainerClass += " visible";
-  } else {
-    iconposition = "plus";
-    formContainerClass = " hidden";
-  }
+  showNewItemForm ? (iconposition = "x") : (iconposition = "plus");
 
   const itemClickHandler = (event) => {
     event.preventDefault();
@@ -286,7 +275,7 @@ const ItemList = ({ user }) => {
       </div>
       {showNewItemForm && (
         <>
-          <div className={formContainerClass}></div>
+          <div className="modal-background"></div>
           <NewItemForm
             handleSubmit={handleSubmit}
             handleInputChange={handleInputChange}

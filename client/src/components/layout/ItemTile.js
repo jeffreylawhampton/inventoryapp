@@ -2,19 +2,13 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 const ItemTile = ({ item, rooms, message, room }) => {
-  let roomName;
   const currentRoom = rooms.find((e) => e.id === item.roomId);
-  if (currentRoom) {
-    roomName = currentRoom.name;
-  } else {
-    roomName = "The void of space";
-  }
+  let roomName;
+  currentRoom ? (roomName = currentRoom.name) : (roomName = "The void of space");
+
   let colorClass;
-  if (item.color) {
-    colorClass = item.color;
-  } else {
-    colorClass = "gray";
-  }
+  item.color ? (colorClass = item.color) : (colorClass = "gray");
+
   return (
     <Link to={`/items/${item.id}`}>
       <div className={`search-tile ${colorClass}`}>
