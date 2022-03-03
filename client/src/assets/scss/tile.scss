@@ -160,7 +160,7 @@ svg.toggle[aria-expanded="true"] {
   ul {
     list-style-type: none;
     margin-left: 0;
-    padding: 20px 8% 10px;
+    padding: 20px 8% 0;
     font-size: 1.05rem;
     font-weight: 500;
 
@@ -171,7 +171,7 @@ svg.toggle[aria-expanded="true"] {
   }
 
   a {
-    color: var(--flat-blue);
+    color: var(--steel);
   }
 
   a:hover {

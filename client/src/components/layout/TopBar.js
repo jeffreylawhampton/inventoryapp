@@ -11,6 +11,11 @@ const TopBar = ({ user }) => {
     setIsOpen(!isOpen);
   };
   const unauthenticatedListItems = [
+    <li key="about">
+      <Link className="header-link" to="/about">
+        About
+      </Link>
+    </li>,
     <li key="sign-in">
       <Link className="header-link" to="/user-sessions/new">
         Log in

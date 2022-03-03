@@ -14,6 +14,7 @@ const clientRoutes = [
   "/categories/:id",
   "/rooms",
   "/rooms/:id",
+  "/about",
 ];
 router.get(clientRoutes, (req, res) => {
   res.sendFile(getClientIndexPath());

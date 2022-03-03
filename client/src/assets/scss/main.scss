@@ -1,9 +1,10 @@
 @import "./foundation/settings";
 @import "~foundation-sites/scss/foundation";
-@import "./topbar.scss";
+@import "./footer.scss";
 @import "./forms.scss";
-@import "./tile.scss";
 @import "./landingpage.scss";
+@import "./tile.scss";
+@import "./topbar.scss";
 @include foundation-everything;
 @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap");
 // place global css here
@@ -49,12 +50,12 @@
 }
 
 .page-container {
+  position: relative;
+  min-height: 92vh;
+  background-color: transparent;
   max-width: 1200px;
   margin: auto;
   padding: 50px 5%;
-  position: relative;
-  height: 90vh;
-  background-color: transparent;
 }
 
 .top-links {

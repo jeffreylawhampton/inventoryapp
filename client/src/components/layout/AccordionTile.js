@@ -5,7 +5,7 @@ const AccordionTile = (props) => {
   const { cardObject, parentLink, colorClass } = props;
   const [isOpen, setIsOpen] = useState(false);
 
-  let itemCount;
+  let itemCount = 0;
   cardObject.items ? (itemCount = cardObject.items.length) : 0;
 
   const toggle = () => {
