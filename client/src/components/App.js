@@ -8,8 +8,10 @@ import "../assets/scss/main.scss";
 import AuthenticatedRoute from "./authentication/AuthenticatedRoute.js";
 import RegistrationForm from "./registration/RegistrationForm";
 import SignInForm from "./authentication/SignInForm";
+import About from "./layout/About";
 import CategoryList from "./layout/CategoryList";
 import CategoryShow from "./layout/CategoryShow";
+import Footer from "./layout/Footer";
 import ItemList from "./layout/ItemList";
 import ItemShow from "./layout/ItemShow";
 import LandingPage from "./layout/LandingPage";
@@ -40,12 +42,15 @@ const App = (props) => {
       <Route exact path="/users/new" component={RegistrationForm} />
       <Route exact path="/user-sessions/new" component={SignInForm} />
       <TopBar user={currentUser} />
-
       <div className="page-container">
         <Switch>
           <Route exact path="/">
             <LandingPage user={currentUser} />
           </Route>
+          <Route exact path="/about">
+            <About user={currentUser} />
+          </Route>
+
           <AuthenticatedRoute
             exact
             path="/categories"
@@ -65,6 +70,7 @@ const App = (props) => {
           <AuthenticatedRoute exact path="/rooms/:id" component={RoomShow} user={currentUser} />
         </Switch>
       </div>
+      <Footer user={currentUser} />
     </BrowserRouter>
   );
 };

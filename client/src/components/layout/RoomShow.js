@@ -11,7 +11,7 @@ const RoomShow = (props) => {
   const userId = user.id;
   const roomId = props.match.params.id;
 
-  const [roomItemsList, setRoomItemsList] = useState(null);
+  const [roomItemsList, setRoomItemsList] = useState([]);
   const [roomsList, setRoomsList] = useState([]);
   const [room, setRoom] = useState({});
   const [otherRoomItems, setOtherRoomItems] = useState([]);
@@ -183,22 +183,12 @@ const RoomShow = (props) => {
   }, []);
 
   let roomItemArray;
-  let visibleDeleteClass = "hidden";
+
   let subhead;
   if (roomItemsList) {
     roomItemArray = roomItemsList.map((item) => {
       return <ItemTile key={item.id} item={item} room={room} rooms={roomsList} />;
     });
-    if (!roomItemArray.length) {
-      visibleDeleteClass = "";
-      subhead = (
-        <>
-          <h4>
-            Such emptiness inside me. <a onClick={itemClickHandler}>Add an item.</a>
-          </h4>
-        </>
-      );
-    }
   }
 
   let otherItemsArray;
@@ -221,10 +211,13 @@ const RoomShow = (props) => {
       <h1 className="highlight">{room.name}</h1>
       <div className="edit-links">
         <a onClick={editHandler}>Edit</a>
-        <a className={visibleDeleteClass} onClick={deleteHandler}>
-          Delete
-        </a>
+        {!roomItemsList.length && <a onClick={deleteHandler}>Delete</a>}
       </div>
+      {!roomItemsList.length && (
+        <h4>
+          Such emptiness inside me. <a onClick={itemClickHandler}>Add an item.</a>
+        </h4>
+      )}
       {showEditForm && (
         <form onSubmit={submitHandler}>
           <input type="text" name="name" value={editedRoom.name} onChange={changeHandler} />

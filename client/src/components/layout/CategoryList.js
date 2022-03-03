@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Redirect } from "react-router-dom";
 
 import translateServerErrors from "../../services/translateServerErrors";
 import makeObjectAbc from "../../services/makeOjbectsAbc";
@@ -11,6 +12,7 @@ import SearchForm from "./SearchForm";
 const CategoryList = (props) => {
   const { user } = props;
   const userId = user.id;
+
   const [errors, setErrors] = useState([]);
   const [categoryList, setCategoryList] = useState([]);
   const [itemList, setItemList] = useState([]);
@@ -64,8 +66,8 @@ const CategoryList = (props) => {
       setErrors([]);
       const updatedCategoryList = categoryList.concat(body.category);
       setCategoryList(updatedCategoryList);
-
       setShowNewCategoryForm(!showNewCategoryForm);
+      setNewCategoryId(body.category.id);
     } catch (error) {
       console.error(`Error in fetch: ${error.message}`);
     }

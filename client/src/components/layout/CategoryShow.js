@@ -219,13 +219,6 @@ const CategoryShow = (props) => {
     });
   }
 
-  let visibleDeleteClass = "";
-  if (category.items) {
-    if (category.items.length) {
-      visibleDeleteClass = "hidden";
-    }
-  }
-
   const colorArray = [
     "Yellow",
     "Orange",
@@ -262,9 +255,7 @@ const CategoryShow = (props) => {
       <h1>{category.name}</h1>
       <div className="edit-links">
         <a onClick={editHandler}>Edit</a>
-        <a className={visibleDeleteClass} onClick={deleteHandler}>
-          Delete
-        </a>
+        {!categoryItemsList.length && <a onClick={deleteHandler}>Delete</a>}
       </div>
       {showEditForm && (
         <form onSubmit={submitHandler}>
