@@ -343,7 +343,7 @@ div.category-container::-webkit-scrollbar {
   }
 }
 
-.edit-links.marg0 {
+.marg0 {
   margin-bottom: 0;
 }
 
@@ -352,10 +352,16 @@ h1 {
 }
 
 .item-info {
-  p.location {
+  p {
     font-size: 1.15rem;
-    margin-top: 20px;
-    margin-bottom: 0;
+  }
+}
+
+.edit-location-link {
+  &::before {
+    content: "|";
+    padding: 0 12px;
+    color: #b2b2b2;
   }
 }
 

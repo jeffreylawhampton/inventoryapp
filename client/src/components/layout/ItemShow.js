@@ -238,6 +238,12 @@ const ItemShow = (props) => {
   if (shouldRedirect) {
     return <Redirect push to="/items" />;
   }
+  let imageSource;
+  if (!item.image || item.image === "" || item.image === "[object Object]") {
+    imageSource = "";
+  } else {
+    imageSource = item.image;
+  }
 
   const colorClass = item.color;
 
@@ -249,26 +255,33 @@ const ItemShow = (props) => {
         </Link>
         <h1 className={`item-highlight ${colorClass}`}>{item.name}</h1>
         {!showEditForm && (
-          <p className="location">
-            <strong>Current location:</strong>
-            <br />
-            {!currentLocation && <>The void of space</>}
-            {currentLocation && currentLocation} <a onClick={locationEditHandler}>Move</a>
-          </p>
+          <>
+            <p>{item.description}</p>
+            <p className="marg0">
+              <strong>Current location:</strong>
+            </p>
+            {!showEditLocationForm && (
+              <p className="location">
+                {!currentLocation && <>The void of space</>}
+                {currentLocation && currentLocation}
+                <a className="edit-location-link" onClick={locationEditHandler}>
+                  Move
+                </a>
+              </p>
+            )}
+          </>
         )}
 
         {showEditLocationForm && (
           <div className="location-form">
             <form onSubmit={locationSubmitHandler}>
-              <label>
-                Room
-                <select name="roomId" value={editedItem.roomId} onChange={changeHandler}>
-                  <option value="" className="disabled" disabled>
-                    Pick a room, any room
-                  </option>
-                  {roomSelectors}
-                </select>
-              </label>
+              <select name="roomId" value={editedItem.roomId} onChange={changeHandler}>
+                <option value="" className="disabled" disabled>
+                  Pick a room, any room
+                </option>
+                {roomSelectors}
+              </select>
+
               <div className="button-group">
                 <input type="submit" value="Move it!" className="button" />
                 <div className="button cancel" onClick={locationEditHandler}>
@@ -282,7 +295,7 @@ const ItemShow = (props) => {
         <div onClick={editHandler} className="circle-button-container">
           {showEditForm ? <PlusIcon iconPosition="x" /> : <EditIcon />}
         </div>
-        {showEditForm ? (
+        {showEditForm && (
           <>
             <div className="edit-links marg0">
               <a onClick={deleteHandler}>Delete item</a>
@@ -300,12 +313,10 @@ const ItemShow = (props) => {
               fileName={fileName}
             />
           </>
-        ) : (
-          <p>{item.description}</p>
         )}
       </div>
       <div className="item-image cell small-12 medium-6">
-        <img src={item.image} />
+        <img src={imageSource} />
       </div>
     </div>
   );
