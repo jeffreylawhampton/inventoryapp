@@ -68,16 +68,22 @@ itemsRouter.delete("/:id", async (req, res) => {
 itemsRouter.patch("/:id", uploadImage.single("image"), async (req, res) => {
   const itemId = req.params.id;
   const user = req.user;
+
   try {
     const { file } = req;
     if (req.body.roomId === "" || !req.body.roomId) {
       delete req.body.roomId;
     }
+    let formInput;
+    if (file) {
+      formInput = {
+        ...req.body,
+        image: file.location,
+      };
+    } else {
+      formInput = req.body;
+    }
 
-    const formInput = {
-      ...req.body,
-      image: file ? file.location : null,
-    };
     const updatedItem = await Item.query().patchAndFetchById(itemId, formInput);
     const serializedUpdatedItem = await ItemSerializer.getItemDetail(updatedItem);
     return res.status(201).json({ item: serializedUpdatedItem });
