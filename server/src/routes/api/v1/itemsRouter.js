@@ -65,22 +65,29 @@ itemsRouter.delete("/:id", async (req, res) => {
   }
 });
 
-itemsRouter.patch("/:id", async (req, res) => {
+itemsRouter.patch("/:id", uploadImage.single("image"), async (req, res) => {
   const itemId = req.params.id;
   const user = req.user;
-  const { name, categoryId, roomId, description } = req.body;
   try {
-    const updatedItem = await Item.query().patchAndFetchById(itemId, {
-      name: name,
-      categoryId: categoryId,
-      roomId: roomId,
-      description: description,
-      userId: user.id,
-    });
+    const { file } = req;
+    if (req.body.roomId === "" || !req.body.roomId) {
+      delete req.body.roomId;
+    }
+
+    const formInput = {
+      ...req.body,
+      image: file ? file.location : null,
+    };
+    const updatedItem = await Item.query().patchAndFetchById(itemId, formInput);
     const serializedUpdatedItem = await ItemSerializer.getItemDetail(updatedItem);
-    return res.status(200).json({ item: serializedUpdatedItem });
+    return res.status(201).json({ item: serializedUpdatedItem });
   } catch (error) {
-    return res.status(500).json({ errors: error });
+    if (error instanceof ValidationError) {
+      return res.status(422).json({ errors: error.data });
+    } else {
+      console.log(error);
+      res.status(500).json({ errors: error });
+    }
   }
 });
 

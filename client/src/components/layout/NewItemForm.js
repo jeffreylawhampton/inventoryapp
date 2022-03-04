@@ -14,12 +14,20 @@ const NewItemForm = ({
   formErrors,
   newItem,
   newRoomName,
-  newCategoryName,
+  newCategory,
+  colorArray,
   handleImageUpload,
   handleNewRoomInputChange,
   handleNewCategoryInputChange,
   fileName,
 }) => {
+  const colorSelectors = colorArray.map((color) => {
+    return (
+      <option key={color} value={color.toLowerCase()}>
+        {color}
+      </option>
+    );
+  });
   return (
     <>
       <div className="form-wrapper">
@@ -74,13 +82,23 @@ const NewItemForm = ({
                 <option value="newCategory">Create new category</option>
               </select>
               {newItem.categoryId === "newCategory" && (
-                <input
-                  type="text"
-                  name="name"
-                  value={newCategoryName.name}
-                  onChange={handleNewCategoryInputChange}
-                  placeholder="New category name"
-                ></input>
+                <>
+                  <input
+                    type="text"
+                    name="name"
+                    value={newCategory.name}
+                    onChange={handleNewCategoryInputChange}
+                    placeholder="New category name"
+                  ></input>
+                  <select
+                    name="color"
+                    value={newCategory.color}
+                    onChange={handleNewCategoryInputChange}
+                  >
+                    <option value="">Pick a color</option>
+                    {colorSelectors}
+                  </select>
+                </>
               )}
             </label>
 

@@ -343,8 +343,20 @@ div.category-container::-webkit-scrollbar {
   }
 }
 
+.edit-links.marg0 {
+  margin-bottom: 0;
+}
+
 h1 {
   font-size: 3.5rem;
+}
+
+.item-info {
+  p.location {
+    font-size: 1.15rem;
+    margin-top: 20px;
+    margin-bottom: 0;
+  }
 }
 
 .category-link {
