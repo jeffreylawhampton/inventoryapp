@@ -30,8 +30,9 @@ const ItemList = ({ user }) => {
   const [newRoomName, setNewRoomName] = useState({
     name: "",
   });
-  const [newCategoryName, setNewCategoryName] = useState({
+  const [newCategory, setNewCategory] = useState({
     name: "",
+    color: "",
   });
   const [newItemId, setNewItemId] = useState(null);
   const [searchString, setSearchString] = useState("");
@@ -111,8 +112,8 @@ const ItemList = ({ user }) => {
     });
   };
   const handleNewCategoryInputChange = (event) => {
-    setNewCategoryName({
-      ...newCategoryName,
+    setNewCategory({
+      ...newCategory,
       [event.currentTarget.name]: event.currentTarget.value,
     });
   };
@@ -123,7 +124,7 @@ const ItemList = ({ user }) => {
     }
 
     if (newItem.categoryId === "newCategory") {
-      newItem.categoryId = await postCategory(newCategoryName);
+      newItem.categoryId = await postCategory(newCategory);
     }
 
     if (validateInput(newItem)) {
@@ -158,14 +159,14 @@ const ItemList = ({ user }) => {
       console.error(`Error in fetch: ${error.message}`);
     }
   };
-  const postCategory = async (newCategoryName) => {
+  const postCategory = async (newCategory) => {
     try {
       const response = await fetch(`/api/v1/categories`, {
         method: "POST",
         headers: new Headers({
           "Content-Type": "application/json",
         }),
-        body: JSON.stringify(newCategoryName),
+        body: JSON.stringify(newCategory),
       });
       if (!response.ok) {
         if (response.status === 422) {
@@ -256,6 +257,21 @@ const ItemList = ({ user }) => {
     return <ItemTile key={userItem.id} item={userItem} rooms={userRooms} />;
   });
 
+  const colorArray = [
+    "Yellow",
+    "Orange",
+    "Mauve",
+    "Maroon",
+    "Rose",
+    "Red",
+    "Purple",
+    "Indigo",
+    "Wintergreen",
+    "Green",
+    "Navy",
+    "Blue",
+  ];
+
   if (shouldRedirect) {
     return <Redirect push to={`/items/${newItemId}`} />;
   }
@@ -288,7 +304,8 @@ const ItemList = ({ user }) => {
             newItem={newItem}
             handleImageUpload={handleImageUpload}
             newRoomName={newRoomName}
-            newCategoryName={newCategoryName}
+            newCategory={newCategory}
+            colorArray={colorArray}
             handleNewRoomInputChange={handleNewRoomInputChange}
             handleNewCategoryInputChange={handleNewCategoryInputChange}
             fileName={fileName}

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { withRouter, Redirect, Link } from "react-router-dom";
 
 import makeObjectAbc from "../../services/makeOjbectsAbc";
+import translateServerErrors from "../../services/translateServerErrors";
 
 import EditIcon from "./EditIcon";
 import ItemShowEditForm from "./ItemShowEditForm";
@@ -11,6 +12,7 @@ const ItemShow = (props) => {
   const itemId = props.match.params.id;
   const { user } = props;
   const [formErrors, setFormErrors] = useState({});
+  const [errors, setErrors] = useState({});
   const [item, setItem] = useState({});
   const [editedItem, setEditedItem] = useState({});
   const [itemList, setItemList] = useState([]);
@@ -20,6 +22,7 @@ const ItemShow = (props) => {
   const [showEditForm, setShowEditForm] = useState(false);
   const [currentLocation, setCurrentLocation] = useState("");
   const [showEditLocationForm, setShowEditLocationForm] = useState(false);
+  const [fileName, setFileName] = useState("");
 
   const getItem = async () => {
     try {
@@ -92,39 +95,89 @@ const ItemShow = (props) => {
     }
   };
 
-  const editItem = async () => {
+  const editItem = async (editedItemData) => {
+    var editedItemBody = new FormData();
+    editedItemBody.append("name", editedItemData.name);
+    editedItemBody.append("description", editedItemData.description);
+    editedItemBody.append("roomId", editedItemData.roomId);
+    editedItemBody.append("categoryId", editedItemData.categoryId);
+    editedItemBody.append("userId", user.id);
+    editedItemBody.append("image", editedItemData.image);
+
     try {
       const response = await fetch(`/api/v1/items/${itemId}`, {
         method: "PATCH",
         headers: {
-          "Content-Type": "application/json",
+          Accept: "image/jpeg",
         },
-        body: JSON.stringify(editedItem),
+        body: editedItemBody,
       });
       if (!response.ok) {
-        const errorMessage = `${response.status} ${response.statusText}`;
-        const error = new Error(errorMessage);
-        throw error;
+        if (response.status === 422) {
+          const body = await response.json();
+          const newErrors = translateServerErrors(body.errors);
+          return setErrors(newErrors);
+        } else {
+          throw new Error(`${response.status} (${response.statusText})`);
+        }
       }
       const body = await response.json();
       setItem(body.item);
-      const currentRoom = roomList.find((e) => e.id === body.item.roomId);
-      if (currentRoom) {
-        setCurrentLocation(currentRoom.name);
+      if (body.item.roomId) {
+        setCurrentLocation(roomList.find((e) => e.id === body.item.roomId).name);
       }
+      setFormErrors({});
     } catch (error) {
-      console.log(`Error in fetch: ${error.message}`);
+      console.error(`Error in Fetch: ${error.message}`);
     }
+  };
+
+  const editLocation = async (editedItem) => {
+    try {
+      const response = await fetch(`/api/v1/items/${itemId}`, {
+        method: "PATCH",
+        headers: new Headers({
+          "Content-Type": "application/json",
+        }),
+        body: JSON.stringify(editedItem),
+      });
+      if (!response.ok) {
+        if (response.status === 422) {
+          const body = await response.json();
+          const newErrors = translateServerErrors(body.errors);
+          return setErrors(newErrors);
+        } else {
+          const errorMessage = `${response.status} (${response.statusText})`;
+          const error = new Error(errorMessage);
+          throw error;
+        }
+      }
+      const body = await response.json();
+      setItem(body.item);
+      setCurrentLocation(roomList.find((e) => e.id === body.item.roomId).name);
+    } catch (error) {
+      console.error(`Error in fetch: ${error.message}`);
+    }
+  };
+
+  const handleImageUpload = (acceptedImage) => {
+    setEditedItem({
+      ...editedItem,
+      image: acceptedImage[0],
+    });
+    setFileName(acceptedImage[0].name);
   };
 
   const editHandler = (event) => {
     event.preventDefault();
+    setFormErrors({});
     setEditedItem({
       name: item.name,
       description: item.description || "",
       roomId: item.roomId || "",
-      categoryId: item.categoryId,
-      userId: item.userId,
+      categoryId: item.categoryId || "",
+      userId: item.userId || "",
+      image: item.image || {},
     });
     setShowEditForm(!showEditForm);
   };
@@ -157,7 +210,7 @@ const ItemShow = (props) => {
 
   const locationSubmitHandler = (event) => {
     event.preventDefault();
-    editItem(editedItem);
+    editLocation(editedItem);
     setShowEditLocationForm(false);
   };
 
@@ -195,11 +248,15 @@ const ItemShow = (props) => {
           <h6 className="category-link">{item.category}</h6>
         </Link>
         <h1 className={`item-highlight ${colorClass}`}>{item.name}</h1>
-        <p>
-          Currently in&nbsp;
-          {!currentLocation && <>the void of space</>}
-          {currentLocation && currentLocation} <a onClick={locationEditHandler}>Move</a>
-        </p>
+        {!showEditForm && (
+          <p className="location">
+            <strong>Current location:</strong>
+            <br />
+            {!currentLocation && <>The void of space</>}
+            {currentLocation && currentLocation} <a onClick={locationEditHandler}>Move</a>
+          </p>
+        )}
+
         {showEditLocationForm && (
           <div className="location-form">
             <form onSubmit={locationSubmitHandler}>
@@ -227,7 +284,7 @@ const ItemShow = (props) => {
         </div>
         {showEditForm ? (
           <>
-            <div className="edit-links">
+            <div className="edit-links marg0">
               <a onClick={deleteHandler}>Delete item</a>
             </div>
             <ItemShowEditForm
@@ -239,6 +296,8 @@ const ItemShow = (props) => {
               editedItem={editedItem}
               formErrors={formErrors}
               categorySelectors={categorySelectors}
+              handleImageUpload={handleImageUpload}
+              fileName={fileName}
             />
           </>
         ) : (

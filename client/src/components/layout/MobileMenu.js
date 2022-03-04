@@ -14,9 +14,15 @@ const MobileMenu = ({ user, authenticatedListItems, unauthenticatedListItems, to
           <span className="darkyellow">invent</span>ory
         </Link>
         {user ? authenticatedListItems : unauthenticatedListItems}
-        <li key="about">
-          <Link to="/about" className="header-link">
-            About
+        <li key="aboutinventory">
+          <Link to="/about?view=inventory" className="header-link">
+            About Inventory
+          </Link>
+        </li>
+
+        <li key="aboutdeveloper">
+          <Link to="/about?view=developer" className="header-link">
+            About the developer
           </Link>
         </li>
       </ul>
