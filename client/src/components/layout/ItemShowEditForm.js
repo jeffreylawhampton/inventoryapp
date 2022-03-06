@@ -43,26 +43,45 @@ const ItemShowEditForm = ({
           onChange={changeHandler}
         />
       </label>
-      <label>
-        Category
-        <select name="categoryId" value={editedItem.categoryId} onChange={changeHandler}>
-          <option value="" className="disabled" disabled>
-            Select a category
-          </option>
-          {categorySelectors}
-        </select>
-      </label>
-      <label>
-        Room
-        <select name="roomId" value={editedItem.roomId} onChange={changeHandler}>
-          <option value="" className="disabled" disabled>
-            Pick a room
-          </option>
-          {roomSelectors}
-        </select>
-        {formErrors.categoryId}
-      </label>
 
+      <div className="inputgroup">
+        <label>
+          Quantity
+          <input
+            type="number"
+            name="quantity"
+            value={editedItem.quantity}
+            onChange={changeHandler}
+          />
+        </label>
+
+        <label className="relative">
+          Unit cost
+          <input type="text" name="unitCost" value={editedItem.unitCost} onChange={changeHandler} />
+          <div className="unit-cost-placeholder">$</div>
+        </label>
+      </div>
+      <div className="inputgroup">
+        <label>
+          Category
+          <select name="categoryId" value={editedItem.categoryId} onChange={changeHandler}>
+            <option value="" className="disabled" disabled>
+              Select a category
+            </option>
+            {categorySelectors}
+          </select>
+        </label>
+        <label>
+          Room
+          <select name="roomId" value={editedItem.roomId} onChange={changeHandler}>
+            <option value="" className="disabled" disabled>
+              Pick a room
+            </option>
+            {roomSelectors}
+          </select>
+          {formErrors.categoryId}
+        </label>
+      </div>
       <div className="button-group">
         <input type="submit" className="button" value="Save changes" />
         <input type="button" className="cancel button" onClick={cancelHandler} value="Cancel" />

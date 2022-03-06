@@ -102,6 +102,8 @@ const ItemShow = (props) => {
     editedItemBody.append("roomId", editedItemData.roomId);
     editedItemBody.append("categoryId", editedItemData.categoryId);
     editedItemBody.append("userId", user.id);
+    editedItemBody.append("quantity", editedItemData.quantity);
+    editedItemBody.append("unitCost", editedItemData.unitCost);
     editedItemBody.append("image", editedItemData.image);
 
     try {
@@ -176,7 +178,9 @@ const ItemShow = (props) => {
       description: item.description || "",
       roomId: item.roomId || "",
       categoryId: item.categoryId || "",
-      userId: item.userId || "",
+      quantity: item.quantity || "",
+      unitCost: item.unitCost || "",
+      userId: user.id,
       image: item.image || {},
     });
     setShowEditForm(!showEditForm);
@@ -187,7 +191,7 @@ const ItemShow = (props) => {
     setEditedItem({
       name: item.name,
       roomId: item.roomId || "",
-      userId: item.userId,
+      userId: user.id,
     });
     setShowEditLocationForm(!showEditLocationForm);
   };
@@ -247,13 +251,27 @@ const ItemShow = (props) => {
 
   const colorClass = item.color;
 
+  const parseMoney = (quantity, unitCost) => {
+    if (!quantity) return unitCost;
+    const cost = parseFloat(unitCost);
+    const value = quantity * unitCost;
+    const displayValue = value.toLocaleString(
+      ("en-US",
+      {
+        style: "currency",
+        currency: "USD",
+      })
+    );
+    return displayValue;
+  };
+
   return (
     <div className="item-show-container grid-x grid-margin-x">
       <div className="item-info cell small-12 medium-6">
         <Link to={`/categories/${item.categoryId}`}>
-          <h6 className="category-link">{item.category}</h6>
+          <h6 className={`category-link item-highlight ${colorClass}`}>{item.category}</h6>
         </Link>
-        <h1 className={`item-highlight ${colorClass}`}>{item.name}</h1>
+        <h1>{item.name}</h1>
         {!showEditForm && (
           <>
             <p>{item.description}</p>
@@ -290,6 +308,32 @@ const ItemShow = (props) => {
               </div>
             </form>
           </div>
+        )}
+
+        {!showEditForm && (
+          <>
+            {item.quantity > 0 ? (
+              <p>
+                <strong>Quantity:</strong> {item.quantity}
+              </p>
+            ) : (
+              ""
+            )}
+            {item.unitCost > 0 ? (
+              <p>
+                <strong>Unit cost:</strong> ${item.unitCost}
+              </p>
+            ) : (
+              ""
+            )}
+            {item.quantity > 1 ? (
+              <p>
+                <strong>Total value:</strong> ${parseMoney(item.quantity, item.unitCost)}
+              </p>
+            ) : (
+              ""
+            )}
+          </>
         )}
 
         <div onClick={editHandler} className="circle-button-container">

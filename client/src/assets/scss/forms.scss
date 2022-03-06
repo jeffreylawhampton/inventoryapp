@@ -11,6 +11,20 @@
   right: 0;
 }
 
+.relative {
+  position: relative;
+
+  input[type="text"] {
+    padding-left: 20px;
+  }
+}
+
+.unit-cost-placeholder {
+  position: absolute;
+  left: 9px;
+  top: 31px;
+  font-size: 1.05rem;
+}
 .form-modal {
   position: fixed;
   left: 60px;

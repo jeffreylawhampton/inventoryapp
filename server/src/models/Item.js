@@ -27,6 +27,12 @@ class Item extends Model {
         description: {
           type: "string",
         },
+        quantity: {
+          type: ["integer", "string"],
+        },
+        unitCost: {
+          type: "string",
+        },
         image: {
           type: { type: "string" },
         },

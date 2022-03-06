@@ -72,6 +72,29 @@ const NewItemForm = ({
 
           <div className="inputgroup">
             <label>
+              Quantity
+              <input
+                type="number"
+                name="quantity"
+                value={newItem.quantity}
+                onChange={handleInputChange}
+              />
+            </label>
+
+            <label className="relative">
+              Unit cost
+              <input
+                type="text"
+                name="unitCost"
+                value={newItem.unitCost}
+                onChange={handleInputChange}
+              />
+              <div className="unit-cost-placeholder">$</div>
+            </label>
+          </div>
+
+          <div className="inputgroup">
+            <label>
               {!formErrors.category && "Category"}
               <span className="formerror">{formErrors.category}</span>
               <select name="categoryId" value={newItem.categoryId} onChange={handleInputChange}>
