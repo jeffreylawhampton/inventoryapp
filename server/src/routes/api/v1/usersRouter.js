@@ -4,7 +4,6 @@ import { User } from "../../../models/index.js";
 import objection from "objection";
 import cleanUserInput from "../../../services/cleanUserInput.js";
 import UserSerializer from "../../../serializers/UserSerializer.js";
-import CategorySerializer from "../../../serializers/CategorySerializer.js";
 
 const { ValidationError } = objection;
 

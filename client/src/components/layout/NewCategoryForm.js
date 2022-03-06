@@ -54,7 +54,6 @@ const NewCategoryForm = (props) => {
   };
 
   const handleSubmit = (event) => {
-    console.log(newCategory);
     event.preventDefault();
     if (validateInput(newCategory)) {
       props.postCategory(newCategory);
