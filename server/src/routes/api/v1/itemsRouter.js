@@ -74,6 +74,9 @@ itemsRouter.patch("/:id", uploadImage.single("image"), async (req, res) => {
     if (req.body.roomId === "" || !req.body.roomId) {
       delete req.body.roomId;
     }
+    if (req.body.quantity === "" || !req.body.quantity) {
+      req.body.quantity = 1;
+    }
     let formInput;
     if (file) {
       formInput = {
