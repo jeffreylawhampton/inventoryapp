@@ -17,6 +17,8 @@ const ItemList = ({ user }) => {
     roomId: "",
     categoryId: "",
     userId: userId,
+    quantity: "",
+    unitCost: "",
     image: {},
   };
   const [newItem, setNewItem] = useState(defaultItemData);
@@ -69,6 +71,8 @@ const ItemList = ({ user }) => {
     newItemBody.append("description", newItemData.description);
     newItemBody.append("roomId", newItemData.roomId);
     newItemBody.append("categoryId", newItemData.categoryId);
+    newItemBody.append("quantity", newItemData.quantity);
+    newItemBody.append("unitCost", newItemData.unitCost);
     newItemBody.append("userId", userId);
     newItemBody.append("image", newItemData.image);
 

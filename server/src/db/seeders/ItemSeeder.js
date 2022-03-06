@@ -9,6 +9,8 @@ class ItemSeeder {
         categoryId: 1,
         roomId: 2,
         description: "Blue 2mm",
+        quantity: 10,
+        unitCost: "4",
       },
       {
         name: "Leather",
@@ -16,12 +18,15 @@ class ItemSeeder {
         categoryId: 1,
         roomId: 1,
         description: "Cowhide",
+        unitCost: "12.5",
+        quantity: 12,
       },
       {
         name: "Feathers",
         userId: 1,
         categoryId: 1,
         roomId: 3,
+        unitCost: "5.32",
       },
       {
         name: "Ink",

@@ -8,7 +8,16 @@ class ItemSerializer {
   }
 
   static async getItemDetail(item) {
-    const allowedAttributes = ["id", "name", "description", "categoryId", "roomId", "image"];
+    const allowedAttributes = [
+      "id",
+      "name",
+      "description",
+      "categoryId",
+      "roomId",
+      "image",
+      "quantity",
+      "unitCost",
+    ];
 
     let serializedItem = {};
     for (const attribute of allowedAttributes) {
