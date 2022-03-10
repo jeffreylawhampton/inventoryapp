@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Redirect } from "react-router-dom";
 
-import translateServerErrors from "../../services/translateServerErrors";
+import fetchUserData from "../../services/fetchUserData";
+import findExistingElement from "../../services/findExistingElement";
 import makeObjectAbc from "../../services/makeOjbectsAbc";
 
 import AccordionTile from "./AccordionTile";
 import NewCategoryForm from "./NewCategoryForm";
 import PlusIcon from "./PlusIcon";
 import SearchForm from "./SearchForm";
+import Postman from "../../services/Postman";
 
 const CategoryList = (props) => {
   const { user } = props;
@@ -18,67 +20,76 @@ const CategoryList = (props) => {
   const [itemList, setItemList] = useState([]);
   const [showNewCategoryForm, setShowNewCategoryForm] = useState(false);
   const [searchString, setSearchString] = useState("");
+  const [formErrors, setFormErrors] = useState({});
+  const [newCategory, setNewCategory] = useState({
+    name: "",
+    color: "",
+    userId: userId,
+  });
 
-  const getCategories = async () => {
-    try {
-      const response = await fetch(`/api/v1/users/${userId}`);
-      if (!response.ok) {
-        const errorMessage = `${response.status} (${response.statusText})`;
-        const error = new Error(errorMessage);
-        throw error;
-      }
-      const body = await response.json();
-      const categoryData = makeObjectAbc(body.user.categories);
-      const itemData = makeObjectAbc(body.user.items);
-
-      const filteredCategories = categoryData.map((category) => {
-        category.items = itemData.filter((item) => item.categoryId === category.id);
-        return category;
-      });
-      setCategoryList(filteredCategories);
-      setItemList(itemData);
-    } catch (error) {
-      console.error(`Error in fetch: ${error.message}`);
-    }
+  const getUserData = async () => {
+    const userData = await fetchUserData(userId);
+    const categoryData = makeObjectAbc(userData.categories);
+    const itemData = makeObjectAbc(userData.items);
+    const filteredCategories = categoryData.map((category) => {
+      category.items = itemData.filter((item) => item.categoryId === category.id);
+      return category;
+    });
+    setCategoryList(filteredCategories);
+    setItemList(itemData);
   };
 
-  const postCategory = async (newCategoryData) => {
-    try {
-      const response = await fetch(`/api/v1/categories`, {
-        method: "POST",
-        headers: new Headers({
-          "Content-Type": "application/json",
-        }),
-        body: JSON.stringify(newCategoryData),
-      });
-      if (!response.ok) {
-        if (response.status === 422) {
-          const body = await response.json();
-          const newErrors = translateServerErrors(body.errors);
-          return setErrors(newErrors);
-        } else {
-          const errorMessage = `${response.status} (${response.statusText})`;
-          const error = new Error(errorMessage);
-          throw error;
-        }
-      }
-      const body = await response.json();
-      setErrors([]);
-      const updatedCategoryList = categoryList.concat(body.category);
-      setCategoryList(updatedCategoryList);
-      setShowNewCategoryForm(!showNewCategoryForm);
-      setNewCategoryId(body.category.id);
-    } catch (error) {
-      console.error(`Error in fetch: ${error.message}`);
+  const validateInput = (newCategory) => {
+    let newFormErrors = {};
+    if (!newCategory.name.trim()) {
+      newFormErrors.name = "Please enter a name";
     }
+
+    let duplicate = findExistingElement("categories", newCategory.name, categoryList);
+    if (duplicate) newFormErrors.name = duplicate;
+
+    if (newFormErrors.name) {
+      setFormErrors(newFormErrors);
+      return false;
+    }
+    return true;
   };
 
-  useEffect(() => {
-    getCategories();
-  }, []);
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    if (validateInput(newCategory)) {
+      const postedCategory = await Postman.postCategory(newCategory);
+      if (postedCategory.responseType === "success") {
+        setFormErrors({});
+        setCategoryList(makeObjectAbc([...categoryList, postedCategory.responseBody]));
+        setShowNewCategoryForm(!showNewCategoryForm);
+      }
+      if (postedCategory.responseType === "server errors") {
+        setErrors(postedCategory.errors);
+      }
+      if (postedCategory.responseType === "failure") {
+        console.error(postedCategory.errors);
+      }
+    }
+  };
+  const handleInputChange = (event) => {
+    setNewCategory({
+      ...newCategory,
+      [event.currentTarget.name]: event.currentTarget.value,
+    });
+  };
+
+  const clearForm = () => {
+    setNewCategory({
+      name: "",
+      color: "",
+      userId: userId,
+    });
+  };
 
   const categoryClickHandler = (event) => {
     event.preventDefault();
+    clearForm();
     setShowNewCategoryForm(!showNewCategoryForm);
   };
 
@@ -105,8 +116,9 @@ const CategoryList = (props) => {
     );
   });
 
-  let iconposition;
-  showNewCategoryForm ? (iconposition = "x") : (iconposition = "plus");
+  useEffect(() => {
+    getUserData();
+  }, []);
 
   return (
     <div className="item-list-container">
@@ -119,16 +131,15 @@ const CategoryList = (props) => {
       <div className="search-container">{searchTiles}</div>
 
       <div onClick={categoryClickHandler} className="circle-button-container">
-        <PlusIcon iconPosition={iconposition} />
+        <PlusIcon iconPosition={showNewCategoryForm ? "x" : "plus"} />
       </div>
       {showNewCategoryForm && (
         <div className="form-modal">
           <NewCategoryForm
-            postCategory={postCategory}
-            user={user}
-            errors={errors}
-            setErrors={setErrors}
-            categories={categoryList}
+            newCategory={newCategory}
+            formErrors={formErrors}
+            handleSubmit={handleSubmit}
+            handleInputChange={handleInputChange}
           />
         </div>
       )}

@@ -1,6 +1,6 @@
 import React from "react";
 import Dropzone from "react-dropzone";
-
+import ErrorList from "./ErrorList";
 const ItemShowEditForm = ({
   formErrors,
   roomSelectors,
@@ -10,10 +10,24 @@ const ItemShowEditForm = ({
   editedItem,
   categorySelectors,
   handleImageUpload,
+  deleteHandler,
   fileName,
+  errors,
 }) => {
   return (
     <form className="item-edit-form" onSubmit={submitHandler}>
+      <span className="formerror">{formErrors.name}</span>
+      <input
+        autoFocus
+        className="h1-input"
+        type="text"
+        name="name"
+        value={editedItem.name}
+        onChange={changeHandler}
+      />
+      <div className="edit-links marg0">
+        <a onClick={deleteHandler}>Delete item</a>
+      </div>
       <Dropzone onDrop={handleImageUpload}>
         {({ getRootProps, getInputProps }) => (
           <section className="dropzone">
@@ -30,10 +44,7 @@ const ItemShowEditForm = ({
         )}
       </Dropzone>
       <div>{fileName && <h6 className="file-name">You've uploaded: {fileName}</h6>}</div>
-      <label>
-        {!formErrors.name && "Name"} <span className="formerror">{formErrors.name}</span>
-        <input type="text" name="name" value={editedItem.name} onChange={changeHandler} />
-      </label>
+      <ErrorList errors={errors} />
       <label>
         Description
         <input
@@ -43,7 +54,6 @@ const ItemShowEditForm = ({
           onChange={changeHandler}
         />
       </label>
-
       <div className="inputgroup">
         <label>
           Quantity

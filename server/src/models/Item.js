@@ -12,8 +12,6 @@ class Item extends Model {
       properties: {
         name: {
           type: "string",
-          minLength: 1,
-          maxLength: 80,
         },
         userId: {
           type: ["integer", "string"],

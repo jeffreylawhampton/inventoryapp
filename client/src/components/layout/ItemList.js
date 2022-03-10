@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Link, Redirect } from "react-router-dom";
 
+import fetchUserData from "../../services/fetchUserData.js";
+import findExistingElement from "../../services/findExistingElement.js";
 import makeObjectAbc from "../../services/makeOjbectsAbc.js";
-import translateServerErrors from "../../services/translateServerErrors";
+import Postman from "../../services/Postman.js";
 
 import ItemTile from "./ItemTile";
 import NewItemForm from "./NewItemForm";
@@ -40,21 +42,11 @@ const ItemList = ({ user }) => {
   const [searchString, setSearchString] = useState("");
   const [fileName, setFileName] = useState("");
 
-  const fetchItems = async () => {
-    try {
-      const response = await fetch(`/api/v1/users/${userId}`);
-      if (!response.ok) {
-        const errorMessage = `${response.status}: (${response.statusText})`;
-        const error = new Error(errorMessage);
-        throw error;
-      }
-      const body = await response.json();
-      setUserItems(makeObjectAbc(body.user.items));
-      setUserCategories(body.user.categories);
-      setUserRooms(body.user.rooms);
-    } catch (error) {
-      console.error(`Error in fetch: ${error.message}`);
-    }
+  const getUserData = async () => {
+    const userData = await fetchUserData(userId);
+    setUserItems(makeObjectAbc(userData.items));
+    setUserCategories(makeObjectAbc(userData.categories));
+    setUserRooms(makeObjectAbc(userData.rooms));
   };
 
   const handleImageUpload = (acceptedImage) => {
@@ -63,43 +55,6 @@ const ItemList = ({ user }) => {
       image: acceptedImage[0],
     });
     setFileName(acceptedImage[0].name);
-  };
-
-  const postItem = async (newItemData) => {
-    var newItemBody = new FormData();
-    newItemBody.append("name", newItemData.name);
-    newItemBody.append("description", newItemData.description);
-    newItemBody.append("roomId", newItemData.roomId);
-    newItemBody.append("categoryId", newItemData.categoryId);
-    newItemBody.append("quantity", newItemData.quantity);
-    newItemBody.append("unitCost", newItemData.unitCost);
-    newItemBody.append("userId", userId);
-    newItemBody.append("image", newItemData.image);
-
-    try {
-      const response = await fetch("/api/v1/items", {
-        method: "POST",
-        headers: {
-          Accept: "image/jpeg",
-        },
-        body: newItemBody,
-      });
-      if (!response.ok) {
-        if (response.status === 422) {
-          const body = await response.json();
-          const newErrors = translateServerErrors(body.errors);
-          return setErrors(newErrors);
-        } else {
-          throw new Error(`${response.status} (${response.statusText})`);
-        }
-      }
-      const body = await response.json();
-      setUserItems([...userItems, body.item]);
-      setNewItemId(body.item.id);
-      setShouldRedirect(true);
-    } catch (error) {
-      console.error(`Error in Fetch: ${error.message}`);
-    }
   };
 
   const handleInputChange = (event) => {
@@ -124,69 +79,26 @@ const ItemList = ({ user }) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (newItem.roomId === "newRoom") {
-      newItem.roomId = await postRoom(newRoomName);
+      newItem.roomId = await Postman.postNewItemRoom(newRoomName);
     }
-
     if (newItem.categoryId === "newCategory") {
-      newItem.categoryId = await postCategory(newCategory);
+      newItem.categoryId = await Postman.postNewItemCategory(newCategory);
     }
-
     if (validateInput(newItem)) {
-      postItem(newItem);
-
-      clearForm();
-    }
-  };
-  const postRoom = async (newRoomName) => {
-    try {
-      const response = await fetch(`/api/v1/rooms`, {
-        method: "POST",
-        headers: new Headers({
-          "Content-Type": "application/json",
-        }),
-        body: JSON.stringify(newRoomName),
-      });
-      if (!response.ok) {
-        if (response.status === 422) {
-          const body = await response.json();
-          const newErrors = translateServerErrors(body.errors);
-          return setErrors(newErrors);
-        } else {
-          const errorMessage = `${response.status} (${response.statusText})`;
-          const error = new Error(errorMessage);
-          throw error;
-        }
+      const postedItem = await Postman.postItem(newItem, userId);
+      if (postedItem.item) {
+        setUserItems([...userItems, postedItem.item]);
+        setNewItemId(postedItem.item.id);
+        setShouldRedirect(true);
+        clearForm();
+        return true;
       }
-      const body = await response.json();
-      return body.room.id;
-    } catch (error) {
-      console.error(`Error in fetch: ${error.message}`);
-    }
-  };
-  const postCategory = async (newCategory) => {
-    try {
-      const response = await fetch(`/api/v1/categories`, {
-        method: "POST",
-        headers: new Headers({
-          "Content-Type": "application/json",
-        }),
-        body: JSON.stringify(newCategory),
-      });
-      if (!response.ok) {
-        if (response.status === 422) {
-          const body = await response.json();
-          const newErrors = translateServerErrors(body.errors);
-          return setErrors(newErrors);
-        } else {
-          const errorMessage = `${response.status} (${response.statusText})`;
-          const error = new Error(errorMessage);
-          throw error;
-        }
+      if (postedItem.errorMessage) {
+        return console.error(postedItem.errorMessage);
       }
-      const body = await response.json();
-      return body.category.id;
-    } catch (error) {
-      console.error(`Error in fetch: ${error.message}`);
+      if (postedItem.errors) {
+        return setErrors(postedItem.errors);
+      }
     }
   };
 
@@ -195,17 +107,10 @@ const ItemList = ({ user }) => {
     if (!newItem.name.trim()) {
       newFormErrors.name = "Please enter a name";
     }
-    if (userItems.some((e) => e.name === newItem.name)) {
-      const existingItem = userItems.find((item) => item.name === newItem.name);
-      let existingItemLink = (
-        <Link to={`/items/${existingItem.id}`}>
-          You already have that <u>here</u>
-        </Link>
-      );
-      newFormErrors.name = existingItemLink;
-    }
+    let duplicate = findExistingElement("items", newItem.name, userItems);
+    if (duplicate) newFormErrors.name = duplicate;
 
-    if (newFormErrors.name || newFormErrors.category) {
+    if (newFormErrors.name) {
       setFormErrors(newFormErrors);
       return false;
     }
@@ -215,29 +120,6 @@ const ItemList = ({ user }) => {
   const clearForm = () => {
     setNewItem(defaultItemData);
   };
-
-  const categorySelectors = userCategories.map((category) => {
-    return (
-      <option value={category.id} key={category.id}>
-        {category.name}
-      </option>
-    );
-  });
-
-  const roomSelectors = userRooms.map((room) => {
-    return (
-      <option value={room.id} key={room.id}>
-        {room.name}
-      </option>
-    );
-  });
-
-  useEffect(() => {
-    fetchItems();
-  }, []);
-
-  let iconposition;
-  showNewItemForm ? (iconposition = "x") : (iconposition = "plus");
 
   const itemClickHandler = (event) => {
     event.preventDefault();
@@ -261,20 +143,9 @@ const ItemList = ({ user }) => {
     return <ItemTile key={userItem.id} item={userItem} rooms={userRooms} />;
   });
 
-  const colorArray = [
-    "Yellow",
-    "Orange",
-    "Mauve",
-    "Maroon",
-    "Rose",
-    "Red",
-    "Purple",
-    "Indigo",
-    "Wintergreen",
-    "Green",
-    "Navy",
-    "Blue",
-  ];
+  useEffect(() => {
+    getUserData();
+  }, []);
 
   if (shouldRedirect) {
     return <Redirect push to={`/items/${newItemId}`} />;
@@ -291,7 +162,7 @@ const ItemList = ({ user }) => {
       <div className="search-container">{searchTiles}</div>
 
       <div onClick={itemClickHandler} className="circle-button-container">
-        <PlusIcon iconPosition={iconposition} />
+        <PlusIcon iconPosition={showNewItemForm ? "x" : "plus"} />
       </div>
       {showNewItemForm && (
         <>
@@ -299,21 +170,19 @@ const ItemList = ({ user }) => {
           <NewItemForm
             handleSubmit={handleSubmit}
             handleInputChange={handleInputChange}
-            roomSelectors={roomSelectors}
-            categorySelectors={categorySelectors}
             errors={errors}
             formErrors={formErrors}
             userItems={userItems}
             itemClickHandler={itemClickHandler}
-            newItem={newItem}
+            userCategories={userCategories}
+            userRooms={userRooms}
             handleImageUpload={handleImageUpload}
-            newRoomName={newRoomName}
             newCategory={newCategory}
-            colorArray={colorArray}
+            newItem={newItem}
+            newRoomName={newRoomName}
             handleNewRoomInputChange={handleNewRoomInputChange}
             handleNewCategoryInputChange={handleNewCategoryInputChange}
             fileName={fileName}
-            setFileName={setFileName}
           />
         </>
       )}

@@ -3,31 +3,27 @@ import { Link, Redirect } from "react-router-dom";
 import ErrorList from "./ErrorList";
 import Dropzone from "react-dropzone";
 
+import colorSelectors from "../../services/colorSelectors";
+import createSelectors from "../../services/createSelectors";
+
 const NewItemForm = ({
   errors,
-  setErrors,
   handleSubmit,
   handleInputChange,
   itemClickHandler,
-  roomSelectors,
-  categorySelectors,
   formErrors,
   newItem,
   newRoomName,
   newCategory,
-  colorArray,
   handleImageUpload,
   handleNewRoomInputChange,
   handleNewCategoryInputChange,
   fileName,
+  userCategories,
+  userRooms,
 }) => {
-  const colorSelectors = colorArray.map((color) => {
-    return (
-      <option key={color} value={color.toLowerCase()}>
-        {color}
-      </option>
-    );
-  });
+  const categorySelectors = createSelectors(userCategories);
+  const roomSelectors = createSelectors(userRooms);
   return (
     <>
       <div className="form-wrapper">

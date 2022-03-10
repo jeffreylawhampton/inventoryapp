@@ -24,8 +24,8 @@ const AccordionTile = (props) => {
   }
 
   return (
-    <div className={`accordion-tile ${colorClass}`}>
-      <div className="top-row">
+    <div className={`accordion-tile`}>
+      <div className={`top-row ${colorClass} ${isOpen ? "noradius" : ""}`}>
         <div className="item-count" onClick={toggle}>
           <p>{itemCount}</p>
           <div className="background"></div>
