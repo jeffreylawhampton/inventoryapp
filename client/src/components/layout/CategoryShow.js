@@ -147,7 +147,7 @@ const CategoryShow = (props) => {
   }
 
   return (
-    <>
+    <div className="item-list-container">
       {showEditForm ? (
         <form onSubmit={submitHandler} className="name-edit-form">
           <input
@@ -206,7 +206,7 @@ const CategoryShow = (props) => {
           </form>
         </div>
       )}
-    </>
+    </div>
   );
 };
 
