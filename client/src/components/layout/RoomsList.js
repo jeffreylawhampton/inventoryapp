@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 
+import fetchUserData from "../../services/fetchUserData.js";
 import makeObjectAbc from "../../services/makeOjbectsAbc.js";
-import translateServerErrors from "../../services/translateServerErrors";
+import Postman from "../../services/Postman.js";
 
 import AccordionTile from "./AccordionTile";
 import PlusIcon from "./PlusIcon";
@@ -13,68 +14,38 @@ const RoomsList = (props) => {
   const [formErrors, setFormErrors] = useState([]);
   const [errors, setErrors] = useState({});
   const [roomsList, setRoomsList] = useState([]);
-  const [itemsList, setItemsList] = useState([]);
   const [newRoom, setNewRoom] = useState({});
   const [showNewRoomForm, setShowNewRoomForm] = useState(false);
   const [searchString, setSearchString] = useState("");
 
-  const getRooms = async () => {
-    try {
-      const response = await fetch(`/api/v1/users/${userId}`);
-      if (!response.ok) {
-        const errorMessage = `${response.status} (${response.statusText})`;
-        const error = new Error(errorMessage);
-        throw error;
-      }
-      const body = await response.json();
-      const roomData = makeObjectAbc(body.user.rooms);
-      const itemData = makeObjectAbc(body.user.items);
-
-      const filteredRooms = roomData.map((room) => {
+  const getUserData = async () => {
+    const userData = await fetchUserData(userId);
+    if (userData.rooms) {
+      const itemData = userData.items;
+      const filteredRooms = userData.rooms.map((room) => {
         room.items = itemData.filter((item) => item.roomId === room.id);
         return room;
       });
-      setRoomsList(filteredRooms);
-      setItemsList(itemData);
-    } catch (error) {
-      console.error(`Error in fetch: ${error.message}`);
+      return setRoomsList(makeObjectAbc(filteredRooms));
     }
+    return userData;
   };
 
   const postRoom = async (newRoomData) => {
-    try {
-      const response = await fetch(`/api/v1/rooms`, {
-        method: "POST",
-        headers: new Headers({
-          "Content-Type": "application/json",
-        }),
-        body: JSON.stringify(newRoomData),
-      });
-      if (!response.ok) {
-        if (response.status === 422) {
-          const body = await response.json();
-          const newErrors = translateServerErrors(body.errors);
-          return setErrors(newErrors);
-        } else {
-          const errorMessage = `${response.status} (${response.statusText})`;
-          const error = new Error(errorMessage);
-          throw error;
-        }
-      }
-      const body = await response.json();
+    const response = await Postman.postRoom(newRoomData);
+    if (response.room) {
+      const newRoomsList = makeObjectAbc([...roomsList, response.room]);
       setErrors([]);
-      const newRoomsList = roomsList.concat(body.room);
-      setRoomsList(newRoomsList);
-
       setShowNewRoomForm(!showNewRoomForm);
-    } catch (error) {
-      console.error(`Error in fetch: ${error.message}`);
+      return setRoomsList(newRoomsList);
+    }
+    if (response.serverErrors) {
+      return setErrors(response.serverErrors);
+    }
+    if (response.errors) {
+      console.error(response.errors);
     }
   };
-
-  useEffect(() => {
-    getRooms();
-  }, []);
 
   const roomClickHandler = (event) => {
     event.preventDefault();
@@ -142,9 +113,9 @@ const RoomsList = (props) => {
     );
   });
 
-  let iconposition;
-  showNewRoomForm ? (iconposition = "x") : (iconposition = "plus");
-
+  useEffect(() => {
+    getUserData();
+  }, []);
   return (
     <div className="item-list-container">
       <h1>My rooms</h1>
@@ -156,7 +127,7 @@ const RoomsList = (props) => {
       <div className="search-container">{searchTiles}</div>
 
       <div onClick={roomClickHandler} className="circle-button-container">
-        <PlusIcon iconPosition={iconposition} />
+        <PlusIcon iconPosition={showNewRoomForm ? "x" : "plus"} />
       </div>
       {showNewRoomForm && (
         <div className="form-modal">

@@ -12,9 +12,7 @@ const LandingPage = (props) => {
   const [rooms, setRooms] = useState([]);
 
   let userId;
-  let loggedIn = false;
   if (props.user) {
-    loggedIn = true;
     userId = props.user.id;
   }
 
@@ -43,16 +41,7 @@ const LandingPage = (props) => {
     fetchUserData();
   }, []);
 
-  return (
-    <div>
-      {loggedIn && (
-        <>
-          <ItemList user={props.user} items={items} />
-        </>
-      )}
-      {!loggedIn && <LoggedOutLandingPage />}
-    </div>
-  );
+  return props.user ? <ItemList user={props.user} items={items} /> : <LoggedOutLandingPage />;
 };
 
 export default LandingPage;

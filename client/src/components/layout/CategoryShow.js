@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { withRouter, Redirect, Link } from "react-router-dom";
 
+import createSelectors from "../../services/createSelectors.js";
+import colorSelectors from "../../services/colorSelectors.js";
+import fetchUserData from "../../services/fetchUserData.js";
 import makeObjectAbc from "../../services/makeOjbectsAbc.js";
+import Postman from "../../services/Postman.js";
 
 import ItemTile from "./ItemTile";
 import PlusIcon from "./PlusIcon";
@@ -28,56 +32,34 @@ const CategoryShow = (props) => {
     categoryId: category.id,
   });
 
-  const fetchUserInfo = async () => {
-    try {
-      const response = await fetch(`/api/v1/users/${userId}`);
-      if (!response.ok) {
-        const errorMessage = `${response.status} (${response.statusText})`;
-        const error = new Error(errorMessage);
-        throw error;
-      }
-      const body = await response.json();
-      const categoryList = body.user.categories;
-      let allItems = body.user.items;
-      allItems = makeObjectAbc(allItems);
-      const otherItems = allItems.filter((item) => item.categoryId !== categoryId);
-      setCategory(categoryList.find((category) => category.id === categoryId));
+  const getUserData = async () => {
+    const userData = await fetchUserData(userId);
+    if (userData.name) {
+      const allItems = makeObjectAbc(userData.items);
+      setCategory(userData.categories.find((category) => category.id === categoryId));
       setCategoryItemsList(allItems.filter((item) => item.categoryId === categoryId));
-      setOtherCategoryItems(allItems.filter((item) => item.categoryId !== categoryId));
-      setUserRooms(body.user.rooms);
-    } catch (err) {
-      console.error(`Error in fetch: ${err.message}`);
+      setOtherCategoryItems(allItems.filter((item) => item.roomId !== categoryId));
+      return setUserRooms(userData.rooms);
+    } else {
+      return userData;
     }
   };
 
-  const moveItem = async (editedItem) => {
-    const itemId = editedItem.id;
-    try {
-      const response = await fetch(`/api/v1/items/${itemId}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(editedItem),
-      });
-      if (!response.ok) {
-        const errorMessage = `${response.status} ${response.statusText}`;
-        const error = new Error(errorMessage);
-        throw error;
-      }
-      const body = await response.json();
-      const newCategoryItem = body.item;
-      const updatedCategoryItems = categoryItemsList.concat(newCategoryItem);
+  const moveItem = async () => {
+    const response = await Postman.moveItem(editedItem);
+    if (response.error) {
+      return console.error(response.error);
+    }
+    if (response.roomId) {
+      const updatedCategoryItems = [...categoryItemsList, response];
       const updatedOtherCategoryItems = otherCategoryItems.map((item) => item);
       const updatedItemIndex = updatedOtherCategoryItems.findIndex(
-        (item) => item.id === newCategoryItem.id
+        (item) => item.id === response.id
       );
       updatedOtherCategoryItems.splice(updatedItemIndex, 1);
       setCategoryItemsList(updatedCategoryItems);
       setOtherCategoryItems(updatedOtherCategoryItems);
-      setShowItemEditForm(!showItemEditForm);
-    } catch (error) {
-      console.log(`Error in fetch: ${error.message}`);
+      return setShowItemEditForm(!showItemEditForm);
     }
   };
 
@@ -87,45 +69,23 @@ const CategoryShow = (props) => {
     moveItem(editedItem);
   };
 
-  const editCategory = async (editedCategory) => {
-    try {
-      const response = await fetch(`/api/v1/categories/${categoryId}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(editedCategory),
-      });
-      if (!response.ok) {
-        const errorMessage = `${response.status} ${response.statusText}`;
-        const error = new Error(errorMessage);
-        throw error;
-      }
-      const body = await response.json();
-      setCategory(body.category);
-      setCategoryItemsList(body.category.items);
-    } catch (error) {
-      console.log(`Error in fetch: ${error.message}`);
+  const submitHandler = async (event) => {
+    event.preventDefault();
+    if (!editedCategory.name.trim()) return setFormErrors("Please enter a name");
+    const response = await Postman.editCategory(editedCategory, categoryId);
+    if (response.category) {
+      setCategory(response.category);
+      setCategoryItemsList(response.category.items);
+      setFormErrors("");
+      return setShowEditForm(false);
     }
+    return console.error(response.error);
   };
 
-  const deleteCategory = async (categoryId) => {
-    try {
-      const response = await fetch(`/api/v1/categories/${categoryId}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (!response.ok) {
-        const errorMessage = `${response.status} ${response.statusText}`;
-        const error = new Error(errorMessage);
-        throw error;
-      }
-      setShouldRedirect(true);
-    } catch (error) {
-      console.error(`Error in fetch: ${error.message}`);
-    }
+  const deleteHandler = async (event) => {
+    event.preventDefault();
+    const response = await Postman.deleteCategory(categoryId);
+    response === "deleted" ? setShouldRedirect(true) : console.error(response);
   };
 
   const editHandler = (event) => {
@@ -144,14 +104,6 @@ const CategoryShow = (props) => {
     setEditedCategory({ ...editedCategory, [event.currentTarget.name]: event.currentTarget.value });
   };
 
-  const submitHandler = (event) => {
-    event.preventDefault();
-    if (validateInput(editedCategory)) {
-      editCategory(editedCategory);
-      setShowEditForm(false);
-    }
-  };
-
   const itemChangeHandler = (event) => {
     event.preventDefault();
     setEditedItem({
@@ -166,11 +118,6 @@ const CategoryShow = (props) => {
       id: "",
     });
     setShowItemEditForm(!showItemEditForm);
-  };
-
-  const deleteHandler = (event) => {
-    event.preventDefault();
-    deleteCategory(categoryId);
   };
 
   const onInputChange = (event) => {
@@ -189,62 +136,11 @@ const CategoryShow = (props) => {
     return <ItemTile key={listItem.id} item={listItem} rooms={userRooms} message={"Hello"} />;
   });
 
-  const validateInput = (editedCategory) => {
-    let newFormErrors = {};
-    if (!editedCategory.name.trim()) {
-      newFormErrors.name = "Please enter a name";
-    }
-    if (newFormErrors.name) {
-      setFormErrors(newFormErrors);
-      return false;
-    }
-    return true;
-  };
-
-  let iconposition;
-  showItemEditForm ? (iconposition = "x") : (iconposition = "plus");
+  const otherItemsArray = createSelectors(otherCategoryItems);
 
   useEffect(() => {
-    fetchUserInfo();
+    getUserData();
   }, []);
-
-  let otherItemsArray;
-  if (otherCategoryItems) {
-    otherItemsArray = otherCategoryItems.map((item) => {
-      return (
-        <option key={item.id} value={item.id}>
-          {item.name}
-        </option>
-      );
-    });
-  }
-
-  const colorArray = [
-    "Yellow",
-    "Orange",
-    "Mauve",
-    "Maroon",
-    "Rose",
-    "Red",
-    "Purple",
-    "Indigo",
-    "Wintergreen",
-    "Green",
-    "Navy",
-    "Blue",
-  ];
-
-  const colorSelectors = colorArray.map((color) => {
-    return (
-      <option value={color.toLowerCase()} key={color}>
-        {color}
-      </option>
-    );
-  });
-  let categoryName;
-  if (category.name) {
-    categoryName = category.name.toLowerCase();
-  }
 
   if (shouldRedirect) {
     return <Redirect push to="/categories" />;
@@ -252,27 +148,26 @@ const CategoryShow = (props) => {
 
   return (
     <>
-      <h1>{category.name}</h1>
-      <div className="edit-links">
-        <a onClick={editHandler}>Edit</a>
-        {!categoryItemsList.length && <a onClick={deleteHandler}>Delete</a>}
-      </div>
-      {showEditForm && (
-        <form onSubmit={submitHandler}>
-          <label>
-            Name
-            <input type="text" name="name" value={editedCategory.name} onChange={changeHandler} />
-          </label>
+      {showEditForm ? (
+        <form onSubmit={submitHandler} className="name-edit-form">
+          <input
+            autoFocus
+            className="h1-input"
+            type="text"
+            name="name"
+            value={editedCategory.name}
+            onChange={changeHandler}
+          />
+
           <div className="formerror">{formErrors.name}</div>
-          <label>
-            Color
-            <select name="color" value={editedCategory.color} onChange={changeHandler}>
-              <option value="" className="disabled" disabled>
-                Pick a color, any color
-              </option>
-              {colorSelectors}
-            </select>
-          </label>
+
+          <select name="color" value={editedCategory.color} onChange={changeHandler}>
+            <option value="" className="disabled" disabled>
+              Pick a color, any color
+            </option>
+            {colorSelectors}
+          </select>
+
           <div className="button-group">
             <input type="submit" className="button" value="Save changes" />
             <div className="button cancel" onClick={editHandler}>
@@ -280,13 +175,21 @@ const CategoryShow = (props) => {
             </div>
           </div>
         </form>
+      ) : (
+        <h1>{category.name} </h1>
       )}
-      <SearchForm placeholder={`Search within ${categoryName}`} onInputChange={onInputChange} />
+
+      <div className="edit-links">
+        <a onClick={editHandler}>Edit</a>
+        {!categoryItemsList.length && <a onClick={deleteHandler}>Delete</a>}
+      </div>
+
+      <SearchForm placeholder={`Search within ${category.name}`} onInputChange={onInputChange} />
 
       <div className="search-container">{searchTiles}</div>
 
       <div onClick={itemClickHandler} className="circle-button-container">
-        <PlusIcon iconPosition={iconposition} />
+        <PlusIcon iconPosition={showItemEditForm ? "x" : "plus"} />
       </div>
 
       {showItemEditForm && (

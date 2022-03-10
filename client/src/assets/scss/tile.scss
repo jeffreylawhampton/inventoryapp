@@ -12,7 +12,7 @@
 
   &:hover {
     box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.2);
-    background: var(--gradient-bg);
+    filter: opacity(0.8) saturate(1.1);
   }
 
   .name {
@@ -68,7 +68,6 @@ svg.toggle[aria-expanded="true"] {
 
 .accordion-tile {
   margin-bottom: 20px;
-  border-radius: 4px;
 
   h5 {
     font-size: 1.4rem;
@@ -77,7 +76,9 @@ svg.toggle[aria-expanded="true"] {
     font-weight: 700;
     font-family: "Outfit", Avenir, sans-serif;
   }
-
+  .top-row.noradius {
+    border-radius: 4px 4px 0 0;
+  }
   .top-row {
     display: flex;
     flex-wrap: nowrap;
@@ -85,6 +86,7 @@ svg.toggle[aria-expanded="true"] {
     align-items: center;
     flex-basis: 100%;
     flex-shrink: 0;
+    border-radius: 4px;
 
     a {
       display: flex;
@@ -95,8 +97,7 @@ svg.toggle[aria-expanded="true"] {
     }
 
     &:hover {
-      background: var(--gradient-bg);
-      border-radius: 4px;
+      filter: opacity(0.8) saturate(1.2);
     }
   }
 

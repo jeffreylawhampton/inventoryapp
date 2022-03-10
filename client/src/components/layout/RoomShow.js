@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { withRouter, Link, Redirect } from "react-router-dom";
 
+import createSelectors from "../../services/createSelectors";
+import fetchUserData from "../../services/fetchUserData";
 import makeObjectAbc from "../../services/makeOjbectsAbc";
+import Postman from "../../services/Postman";
 
 import ItemTile from "./ItemTile";
 import PlusIcon from "./PlusIcon";
@@ -17,63 +20,25 @@ const RoomShow = (props) => {
   const [otherRoomItems, setOtherRoomItems] = useState([]);
   const [editedRoom, setEditedRoom] = useState({});
   const [showEditForm, setShowEditForm] = useState(false);
-  const [formErrors, setFormErrors] = useState({});
+  const [formErrors, setFormErrors] = useState("");
   const [showItemEditForm, setShowItemEditForm] = useState(false);
   const [shouldRedirect, setShouldRedirect] = useState(false);
   const [editedItem, setEditedItem] = useState({
     name: "",
     roomId: "",
   });
-  const [viewItems, setViewItems] = useState(true);
 
-  const fetchUserInfo = async () => {
-    try {
-      const response = await fetch(`/api/v1/users/${userId}`);
-      if (!response.ok) {
-        const errorMessage = `${response.status}: (${response.statusText})`;
-        const error = new Error(errorMessage);
-        throw error;
-      }
-      const body = await response.json();
-      const roomList = body.user.rooms;
-      const allItems = body.user.items;
-      setRoomsList(roomList);
-      setRoom(roomList.find((room) => room.id === roomId));
+  const getUserData = async () => {
+    const userData = await fetchUserData(userId);
+    if (userData.name) {
+      const allItems = userData.items;
+      const allRooms = userData.rooms;
+      setRoomsList(allRooms);
+      setRoom(allRooms.find((room) => room.id === roomId));
       setRoomItemsList(makeObjectAbc(allItems.filter((item) => item.roomId === roomId)));
-      setOtherRoomItems(allItems.filter((item) => item.roomId !== roomId));
-    } catch (error) {
-      console.error(`Error in fetch: ${error.message}`);
-    }
-  };
-
-  const moveItem = async (editedItem) => {
-    const itemId = editedItem.id;
-    try {
-      const response = await fetch(`/api/v1/items/${itemId}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(editedItem),
-      });
-      if (!response.ok) {
-        const errorMessage = `${response.status} ${response.statusText}`;
-        const error = new Error(errorMessage);
-        throw error;
-      }
-      const body = await response.json();
-      const newRoomItem = body.item;
-      const updatedRoomItems = roomItemsList.concat(newRoomItem);
-      const updatedOtherRoomItems = otherRoomItems.map((item) => item);
-      const updatedItemIndex = updatedOtherRoomItems.findIndex(
-        (item) => item.id === newRoomItem.id
-      );
-      updatedOtherRoomItems.splice(updatedItemIndex, 1);
-      setRoomItemsList(updatedRoomItems);
-      setOtherRoomItems(updatedOtherRoomItems);
-      setShowItemEditForm(!showItemEditForm);
-    } catch (error) {
-      console.log(`Error in fetch: ${error.message}`);
+      return setOtherRoomItems(makeObjectAbc(allItems.filter((item) => item.roomId !== roomId)));
+    } else {
+      return userData;
     }
   };
 
@@ -93,64 +58,44 @@ const RoomShow = (props) => {
     });
   };
 
-  const deleteHandler = (event) => {
+  const deleteHandler = async (event) => {
     event.preventDefault();
-    deleteRoom(roomId);
+    const response = await Postman.deleteRoom(roomId);
+    response === "deleted" ? setShouldRedirect(true) : console.error(response);
   };
 
-  const editRoom = async (editedRoom) => {
-    try {
-      const response = await fetch(`/api/v1/rooms/${roomId}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(editedRoom),
-      });
-      if (!response.ok) {
-        const errorMessage = `${response.status} ${response.statusText}`;
-        const error = new Error(errorMessage);
-        throw error;
-      }
-      const body = await response.json();
-      setRoom(body.room);
-    } catch (error) {
-      console.log(`Error in fetch: ${error.message}`);
-    }
-  };
-
-  const deleteRoom = async (roomId) => {
-    try {
-      const response = await fetch(`/api/v1/rooms/${roomId}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (!response.ok) {
-        const errorMessage = `${response.status} ${response.statusText}`;
-        const error = new Error(errorMessage);
-        throw error;
-      }
-      setShouldRedirect(true);
-    } catch (error) {
-      console.error(`Error in fetch: ${error.message}`);
-    }
-  };
-
-  const handleItemClick = (event) => {
+  const submitHandler = async (event) => {
     event.preventDefault();
-    setViewItems(true);
+    if (!editedRoom.name.trim()) return setFormErrors("Please enter a name");
+    const response = await Postman.editRoom(editedRoom, roomId);
+    if (response.room) {
+      setRoom(response.room);
+      setFormErrors("");
+      return setShowEditForm(false);
+    }
+    return console.error(response.error);
   };
 
-  const itemSubmitHandler = (event) => {
+  const itemSubmitHandler = async (event) => {
     event.preventDefault();
     editedItem.roomId = roomId;
-    moveItem(editedItem);
+    const response = await Postman.moveItem(editedItem);
+    if (response.roomId) {
+      setRoomItemsList([...roomItemsList, response]);
+      const updatedOtherRoomItems = otherRoomItems.map((item) => item);
+      const updatedItemIndex = updatedOtherRoomItems.findIndex((item) => item.id === response.id);
+      updatedOtherRoomItems.splice(updatedItemIndex, 1);
+      setOtherRoomItems(updatedOtherRoomItems);
+      return setShowItemEditForm(!showItemEditForm);
+    }
+    if (response.error) {
+      return console.error(response.error);
+    }
   };
 
   const editHandler = (event) => {
     event.preventDefault();
+    setFormErrors("");
     setEditedRoom({
       name: room.name,
       id: roomId,
@@ -167,19 +112,8 @@ const RoomShow = (props) => {
     });
   };
 
-  const submitHandler = (event) => {
-    event.preventDefault();
-    if (editedRoom.name.trim()) {
-      editRoom(editedRoom);
-    }
-    setShowEditForm(false);
-  };
-
-  let iconposition;
-  showItemEditForm ? (iconposition = "x") : (iconposition = "plus");
-
   useEffect(() => {
-    fetchUserInfo();
+    getUserData();
   }, []);
 
   let roomItemArray;
@@ -191,16 +125,7 @@ const RoomShow = (props) => {
     });
   }
 
-  let otherItemsArray;
-  if (otherRoomItems) {
-    otherItemsArray = otherRoomItems.map((item) => {
-      return (
-        <option key={item.id} value={item.id}>
-          {item.name}
-        </option>
-      );
-    });
-  }
+  const otherItemsArray = createSelectors(otherRoomItems);
 
   if (shouldRedirect) {
     return <Redirect push to="/rooms" />;
@@ -208,7 +133,28 @@ const RoomShow = (props) => {
 
   return (
     <div className="item-list-container">
-      <h1 className="highlight">{room.name}</h1>
+      {showEditForm ? (
+        <form onSubmit={submitHandler} className="name-edit-form">
+          <span className="formerror">{formErrors}</span>
+          <input
+            autoFocus
+            className="h1-input"
+            type="text"
+            name="name"
+            value={editedRoom.name}
+            onChange={changeHandler}
+          />
+
+          <div className="button-group">
+            <input type="submit" className="button" value="Save changes" />
+            <div className="button cancel" onClick={editHandler}>
+              Cancel
+            </div>
+          </div>
+        </form>
+      ) : (
+        <h1>{room.name}</h1>
+      )}
       <div className="edit-links">
         <a onClick={editHandler}>Edit</a>
         {!roomItemsList.length && <a onClick={deleteHandler}>Delete</a>}
@@ -218,29 +164,17 @@ const RoomShow = (props) => {
           Such emptiness inside me. <a onClick={itemClickHandler}>Add an item.</a>
         </h4>
       )}
-      {showEditForm && (
-        <form onSubmit={submitHandler}>
-          <input type="text" name="name" value={editedRoom.name} onChange={changeHandler} />
 
-          <div className="formerror">{formErrors.name}</div>
-          <div className="button-group">
-            <input type="submit" className="button" value="Save changes" />
-            <div className="button cancel" onClick={editHandler}>
-              Cancel
-            </div>
-          </div>
-        </form>
-      )}
       {!showItemEditForm && subhead}
-
       <div className="search-container">{roomItemArray}</div>
       <div onClick={itemClickHandler} className="circle-button-container">
-        <PlusIcon iconPosition={iconposition} />
+        <PlusIcon iconPosition={showItemEditForm ? "x" : "plus"} />
       </div>
       {showItemEditForm && (
         <div className="form-modal">
           <h3>Move an item to {room.name.toLowerCase()}</h3>
           <form onSubmit={itemSubmitHandler}>
+            <span className="formerror">{formErrors.name}</span>
             <select name="id" value={editedItem.id} onChange={itemChangeHandler}>
               <option value="" className="disabled" disabled>
                 Select an item
