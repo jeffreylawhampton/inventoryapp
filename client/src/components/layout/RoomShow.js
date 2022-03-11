@@ -6,8 +6,10 @@ import fetchUserData from "../../services/fetchUserData";
 import makeObjectAbc from "../../services/makeOjbectsAbc";
 import Postman from "../../services/Postman";
 
+import EditIcon from "../assets/EditIcon";
 import ItemTile from "./ItemTile";
 import PlusIcon from "./PlusIcon";
+import SearchForm from "./SearchForm";
 
 const RoomShow = (props) => {
   const { user } = props;
@@ -27,6 +29,7 @@ const RoomShow = (props) => {
     name: "",
     roomId: "",
   });
+  const [searchString, setSearchString] = useState("");
 
   const getUserData = async () => {
     const userData = await fetchUserData(userId);
@@ -125,6 +128,22 @@ const RoomShow = (props) => {
     });
   }
 
+  const onInputChange = (event) => {
+    event.preventDefault();
+    setSearchString(event.currentTarget.value);
+  };
+
+  let searchedItems = roomItemsList.filter((listItem) => {
+    return (
+      listItem.name.toLowerCase().startsWith(searchString) ||
+      listItem.name.toUpperCase().startsWith(searchString)
+    );
+  });
+
+  const searchTiles = searchedItems.map((listItem) => {
+    return <ItemTile key={listItem.id} item={listItem} rooms={roomsList} />;
+  });
+
   const otherItemsArray = createSelectors(otherRoomItems);
 
   if (shouldRedirect) {
@@ -145,28 +164,38 @@ const RoomShow = (props) => {
             onChange={changeHandler}
           />
 
-          <div className="button-group">
+          <div className="button-container">
             <input type="submit" className="button" value="Save changes" />
             <div className="button cancel" onClick={editHandler}>
               Cancel
             </div>
           </div>
+          {!roomItemsList.length && (
+            <a className="delete" onClick={deleteHandler}>
+              Delete room
+            </a>
+          )}
         </form>
       ) : (
-        <h1>{room.name}</h1>
+        <h1>
+          {room.name}{" "}
+          <span className="edit-icon" onClick={editHandler}>
+            <EditIcon />
+          </span>
+        </h1>
       )}
-      <div className="edit-links">
-        <a onClick={editHandler}>Edit</a>
-        {!roomItemsList.length && <a onClick={deleteHandler}>Delete</a>}
-      </div>
-      {!roomItemsList.length && (
+
+      {!showItemEditForm && subhead}
+      {roomItemsList.length ? (
+        <>
+          <SearchForm placeholder={`Search within ${room.name}`} onInputChange={onInputChange} />
+          <div className="search-container">{searchTiles}</div>
+        </>
+      ) : (
         <h4>
           Such emptiness inside me. <a onClick={itemClickHandler}>Add an item.</a>
         </h4>
       )}
-
-      {!showItemEditForm && subhead}
-      <div className="search-container">{roomItemArray}</div>
       <div onClick={itemClickHandler} className="circle-button-container">
         <PlusIcon iconPosition={showItemEditForm ? "x" : "plus"} />
       </div>

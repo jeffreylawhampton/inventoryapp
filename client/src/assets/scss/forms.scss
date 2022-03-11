@@ -7,24 +7,79 @@ input[type="text"].h1-input {
   box-shadow: none;
   padding: 0;
   height: fit-content;
-  background-color: #ffba0a44;
+  border-bottom: 4px dotted #ddd;
   width: 100%;
 }
 
-.name-edit-form {
-  max-width: 700px;
-  .button-group {
-    .button {
-      flex: 0 1 auto;
-      padding: 14px;
+.twitter-picker {
+  border: 0 !important;
+  box-shadow: none !important;
+  margin: 0 -15px;
+  background: transparent !important;
+}
+.slider-picker {
+  margin: 25px 0px 27px;
+}
+.picker-links {
+  font-size: 1rem;
+  margin-bottom: 0px;
+  margin-top: 10px;
+  display: flex;
+  font-weight: 600;
+  gap: 10px;
+
+  a {
+    color: var(--steel);
+
+    &:hover {
+      color: var(--flat-blue);
     }
   }
 }
 
-@media (max-width: 700px) {
-  input[type="text"].h1-input {
-    font-size: 2.5rem;
-    line-height: 1;
+.color-picker {
+  margin-top: 0px;
+  padding: 0px;
+  border-radius: 4px;
+  height: fit-content;
+}
+
+.name-edit-form {
+  max-width: 700px;
+  margin-bottom: 40px;
+
+  .button-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    max-width: 400px;
+    margin: 20px 0;
+
+    .button {
+      padding: 14px 24px;
+      margin: 0;
+      font-weight: 600;
+      &:hover {
+        background: var(--steel);
+      }
+    }
+
+    .button.cancel {
+      color: black;
+      background: var(--dark-yellow);
+
+      &:hover {
+        background: var(--yellow);
+      }
+    }
+  }
+
+  a.delete {
+    font-weight: 600;
+    padding-bottom: 2px;
+    border-bottom: 1px solid var(--mauve);
+    color: var(--mauve);
   }
 }
 
@@ -76,6 +131,7 @@ input[type="text"].h1-input {
     width: 100%;
     margin-top: 15px;
   }
+
   input[type="text"],
   select {
     border: 1px solid #ececec;
@@ -282,7 +338,7 @@ input[type="text"].h1-input {
 }
 
 p.sample-color {
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-weight: 600;
 }
 
@@ -397,5 +453,12 @@ p.sample-color {
     height: calc(100vh - 60px);
     max-height: 100vh;
     overflow-y: scroll;
+  }
+}
+
+@media (max-width: 700px) {
+  input[type="text"].h1-input {
+    font-size: 2.5rem;
+    line-height: 1;
   }
 }

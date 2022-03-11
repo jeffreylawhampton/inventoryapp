@@ -176,7 +176,12 @@ const ItemShow = (props) => {
             fileName={fileName}
           />
         ) : (
-          <h1 className={`item-highlight ${item.color}`}>{item.name} </h1>
+          <h1>
+            {item.name}{" "}
+            <span className="edit-icon" onClick={editHandler}>
+              <EditIcon />
+            </span>
+          </h1>
         )}
 
         {!showEditForm && (
@@ -247,10 +252,6 @@ const ItemShow = (props) => {
             )}
           </>
         )}
-
-        <div onClick={editHandler} className="circle-button-container">
-          {showEditForm ? <PlusIcon iconPosition="x" /> : <EditIcon />}
-        </div>
       </div>
       <div className="item-image cell small-12 medium-6">
         <img src={item.image ? item.image : ""} />

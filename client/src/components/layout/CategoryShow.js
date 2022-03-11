@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { withRouter, Redirect, Link } from "react-router-dom";
 import { TwitterPicker } from "react-color";
+import { SliderPicker } from "react-color";
 
 import createSelectors from "../../services/createSelectors.js";
 import colors from "../assets/colors.js";
@@ -8,6 +9,7 @@ import fetchUserData from "../../services/fetchUserData.js";
 import makeObjectAbc from "../../services/makeOjbectsAbc.js";
 import Postman from "../../services/Postman.js";
 
+import EditIcon from "../assets/EditIcon";
 import ItemTile from "./ItemTile";
 import PlusIcon from "./PlusIcon";
 import SearchForm from "./SearchForm";
@@ -27,37 +29,36 @@ const CategoryShow = (props) => {
   const [showItemEditForm, setShowItemEditForm] = useState(false);
   const [shouldRedirect, setShouldRedirect] = useState(false);
   const [searchString, setSearchString] = useState("");
-  const [editedItem, setEditedItem] = useState({
-    name: category.name,
-    color: category.color,
-    categoryId: category.id,
-  });
-
-  const [color, setColor] = useState({
-    color: category.color,
-  });
+  const [editedItem, setEditedItem] = useState({});
+  const [color, setColor] = useState("");
+  const [pickerView, setPickerView] = useState("Twitter");
 
   const getUserData = async () => {
     const userData = await fetchUserData(userId);
     if (userData.name) {
+      const categoryList = makeObjectAbc(userData.categories);
       const allItems = makeObjectAbc(userData.items);
-      setCategory(userData.categories.find((category) => category.id === categoryId));
-      setCategoryItemsList(allItems.filter((item) => item.categoryId === categoryId));
-      setOtherCategoryItems(allItems.filter((item) => item.roomId !== categoryId));
-      return setUserRooms(userData.rooms);
+      const categoryItems = allItems.filter((item) => item.categoryId === categoryId);
+      const otherItems = allItems.filter((item) => item.categoryId !== categoryId);
+      const selectedCategory = categoryList.find((category) => category.id === categoryId);
+      const categoryColor = selectedCategory.color;
+      setCategory(selectedCategory);
+      setColor(categoryColor);
+      setCategoryItemsList(categoryItems);
+      setOtherCategoryItems(otherItems);
+      return setUserRooms(makeObjectAbc(userData.rooms));
     } else {
       return userData;
     }
   };
 
-  const moveItem = async () => {
+  const itemSubmitHandler = async (event) => {
+    event.preventDefault();
+    editedItem.categoryId = categoryId;
     const response = await Postman.moveItem(editedItem);
-    if (response.error) {
-      return console.error(response.error);
-    }
-    if (response.roomId) {
-      const updatedCategoryItems = [...categoryItemsList, response];
-      const updatedOtherCategoryItems = otherCategoryItems.map((item) => item);
+    if (response.id) {
+      const updatedCategoryItems = categoryItemsList.concat(response);
+      const updatedOtherCategoryItems = [...otherCategoryItems];
       const updatedItemIndex = updatedOtherCategoryItems.findIndex(
         (item) => item.id === response.id
       );
@@ -66,17 +67,13 @@ const CategoryShow = (props) => {
       setOtherCategoryItems(updatedOtherCategoryItems);
       return setShowItemEditForm(!showItemEditForm);
     }
-  };
-
-  const itemSubmitHandler = (event) => {
-    event.preventDefault();
-    editedItem.categoryId = categoryId;
-    moveItem(editedItem);
+    if (response.error) {
+      return console.error(response.error);
+    }
   };
 
   const submitHandler = async (event) => {
     event.preventDefault();
-
     editedCategory.color = color;
     if (!editedCategory.name.trim()) return setFormErrors("Please enter a name");
     const response = await Postman.editCategory(editedCategory, categoryId);
@@ -134,6 +131,13 @@ const CategoryShow = (props) => {
   const handleChange = (color, event) => {
     setColor(color.hex);
   };
+
+  const handleTwitterClick = (event) => {
+    setPickerView("Twitter");
+  };
+  const handleSliderClick = (event) => {
+    setPickerView("Slider");
+  };
   let searchedItems = categoryItemsList.filter((listItem) => {
     return (
       listItem.name.toLowerCase().startsWith(searchString) ||
@@ -142,7 +146,7 @@ const CategoryShow = (props) => {
   });
 
   const searchTiles = searchedItems.map((listItem) => {
-    return <ItemTile key={listItem.id} item={listItem} rooms={userRooms} message={"Hello"} />;
+    return <ItemTile key={listItem.id} item={listItem} rooms={userRooms} />;
   });
 
   const otherItemsArray = createSelectors(otherCategoryItems);
@@ -156,7 +160,7 @@ const CategoryShow = (props) => {
   }
 
   return (
-    <div className="item-list-container">
+    <>
       {showEditForm ? (
         <form onSubmit={submitHandler} className="name-edit-form">
           <input
@@ -167,28 +171,50 @@ const CategoryShow = (props) => {
             value={editedCategory.name}
             onChange={changeHandler}
           />
-
           <div className="formerror">{formErrors.name}</div>
-          <p style={{ color: color }} className="sample-color">
-            Color
-          </p>
-          <TwitterPicker colors={colors} onChange={handleChange} color={color} width="auto" />
-
-          <div className="button-group">
+          <div className="picker-links">
+            <a
+              onClick={handleTwitterClick}
+              className={pickerView === "Twitter" ? "active" : "inactive"}
+            >
+              Pick a color
+            </a>{" "}
+            or
+            <a
+              className={pickerView === "Slider" ? "active" : "inactive"}
+              onClick={handleSliderClick}
+            >
+              choose your own
+            </a>
+          </div>
+          <div className="color-picker">
+            {pickerView === "Twitter" && (
+              <TwitterPicker colors={colors} onChange={handleChange} color={color} width="auto" />
+            )}
+            {pickerView === "Slider" && (
+              <SliderPicker onChange={handleChange} color={color} width="auto" />
+            )}
+          </div>
+          <div className="button-container">
             <input type="submit" className="button" value="Save changes" />
             <div className="button cancel" onClick={editHandler}>
               Cancel
             </div>
           </div>
+          {!categoryItemsList.length && (
+            <a className="delete" onClick={deleteHandler}>
+              Delete category
+            </a>
+          )}
         </form>
       ) : (
-        <h1>{category.name} </h1>
+        <h1>
+          {category.name}{" "}
+          <span className="edit-icon" onClick={editHandler}>
+            <EditIcon />
+          </span>
+        </h1>
       )}
-
-      <div className="edit-links">
-        <a onClick={editHandler}>Edit</a>
-        {!categoryItemsList.length && <a onClick={deleteHandler}>Delete</a>}
-      </div>
 
       <SearchForm placeholder={`Search within ${category.name}`} onInputChange={onInputChange} />
 
@@ -212,7 +238,7 @@ const CategoryShow = (props) => {
           </form>
         </div>
       )}
-    </div>
+    </>
   );
 };
 
