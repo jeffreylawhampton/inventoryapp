@@ -312,6 +312,19 @@ h1 {
   }
 }
 
+.edit-icon {
+  svg {
+    fill: black;
+    transition: fill 200ms ease;
+  }
+
+  &:hover {
+    svg {
+      fill: var(--dark-yellow);
+      transition: fill 200ms ease;
+    }
+  }
+}
 .category-link {
   font-size: 1.3rem;
   font-family: "Outfit", Avenir, sans-serif;

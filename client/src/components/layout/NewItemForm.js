@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, Redirect } from "react-router-dom";
 import ErrorList from "./ErrorList";
 import { TwitterPicker } from "react-color";
+import { SliderPicker } from "react-color";
 import Dropzone from "react-dropzone";
 
 import colors from "../assets/colors";
@@ -25,8 +26,15 @@ const NewItemForm = ({
   userRooms,
   color,
 }) => {
+  const [pickerView, setPickerView] = useState("Twitter");
   const categorySelectors = createSelectors(userCategories);
   const roomSelectors = createSelectors(userRooms);
+  const handleTwitterClick = (event) => {
+    setPickerView("Twitter");
+  };
+  const handleSliderClick = (event) => {
+    setPickerView("Slider");
+  };
   return (
     <>
       <div className="form-wrapper">
@@ -112,15 +120,24 @@ const NewItemForm = ({
                     onChange={handleNewCategoryInputChange}
                     placeholder="New category name"
                   ></input>
-                  <p className="sample-color" style={{ color: color }}>
-                    Pick a color
-                  </p>
-                  <TwitterPicker
-                    colors={colors}
-                    onChange={handleColorChange}
-                    color={color}
-                    width="auto"
-                  />
+                  <div className="picker-links">
+                    <a onClick={handleTwitterClick}>Pick a color</a> or
+                    <a onClick={handleSliderClick}>choose your own</a>
+                  </div>
+                  <div className="color-picker">
+                    {pickerView === "Twitter" && (
+                      <TwitterPicker
+                        colors={colors}
+                        triangle={"hide"}
+                        onChange={handleColorChange}
+                        color={color}
+                        width="auto"
+                      />
+                    )}
+                    {pickerView === "Slider" && (
+                      <SliderPicker onChange={handleColorChange} color={color} width="auto" />
+                    )}
+                  </div>
                 </>
               )}
             </label>
