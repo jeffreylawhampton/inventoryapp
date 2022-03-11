@@ -6,12 +6,9 @@ const ItemTile = ({ item, rooms, message, room }) => {
   let roomName;
   currentRoom ? (roomName = currentRoom.name) : (roomName = "The void of space");
 
-  let colorClass;
-  item.color ? (colorClass = item.color) : (colorClass = "gray");
-
   return (
     <Link to={`/items/${item.id}`}>
-      <div className={`search-tile ${colorClass}`}>
+      <div style={{ background: item.color }} className="search-tile">
         <div className="name">
           <h5>{item.name}</h5>
         </div>

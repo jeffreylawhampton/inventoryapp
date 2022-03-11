@@ -7,7 +7,7 @@ import makeObjectAbc from "../../services/makeOjbectsAbc";
 import Postman from "../../services/Postman";
 import Teller from "../../services/Teller";
 
-import EditIcon from "./EditIcon";
+import EditIcon from "../assets/EditIcon";
 import ItemShowEditForm from "./ItemShowEditForm";
 import PlusIcon from "./PlusIcon";
 

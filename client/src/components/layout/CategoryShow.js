@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { withRouter, Redirect, Link } from "react-router-dom";
+import { TwitterPicker } from "react-color";
 
 import createSelectors from "../../services/createSelectors.js";
-import colorSelectors from "../../services/colorSelectors.js";
+import colors from "../assets/colors.js";
 import fetchUserData from "../../services/fetchUserData.js";
 import makeObjectAbc from "../../services/makeOjbectsAbc.js";
 import Postman from "../../services/Postman.js";
@@ -30,6 +31,10 @@ const CategoryShow = (props) => {
     name: category.name,
     color: category.color,
     categoryId: category.id,
+  });
+
+  const [color, setColor] = useState({
+    color: category.color,
   });
 
   const getUserData = async () => {
@@ -71,6 +76,8 @@ const CategoryShow = (props) => {
 
   const submitHandler = async (event) => {
     event.preventDefault();
+
+    editedCategory.color = color;
     if (!editedCategory.name.trim()) return setFormErrors("Please enter a name");
     const response = await Postman.editCategory(editedCategory, categoryId);
     if (response.category) {
@@ -124,7 +131,9 @@ const CategoryShow = (props) => {
     event.preventDefault();
     setSearchString(event.currentTarget.value);
   };
-
+  const handleChange = (color, event) => {
+    setColor(color.hex);
+  };
   let searchedItems = categoryItemsList.filter((listItem) => {
     return (
       listItem.name.toLowerCase().startsWith(searchString) ||
@@ -160,13 +169,10 @@ const CategoryShow = (props) => {
           />
 
           <div className="formerror">{formErrors.name}</div>
-
-          <select name="color" value={editedCategory.color} onChange={changeHandler}>
-            <option value="" className="disabled" disabled>
-              Pick a color, any color
-            </option>
-            {colorSelectors}
-          </select>
+          <p style={{ color: color }} className="sample-color">
+            Color
+          </p>
+          <TwitterPicker colors={colors} onChange={handleChange} color={color} width="auto" />
 
           <div className="button-group">
             <input type="submit" className="button" value="Save changes" />

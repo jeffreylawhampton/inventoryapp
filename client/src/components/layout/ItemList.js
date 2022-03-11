@@ -41,6 +41,9 @@ const ItemList = ({ user }) => {
   const [newItemId, setNewItemId] = useState(null);
   const [searchString, setSearchString] = useState("");
   const [fileName, setFileName] = useState("");
+  const [color, setColor] = useState({
+    color: "#ddd",
+  });
 
   const getUserData = async () => {
     const userData = await fetchUserData(userId);
@@ -64,6 +67,10 @@ const ItemList = ({ user }) => {
     });
   };
 
+  const handleColorChange = (color, event) => {
+    setColor(color.hex);
+  };
+
   const handleNewRoomInputChange = (event) => {
     setNewRoomName({
       ...newRoomName,
@@ -82,6 +89,7 @@ const ItemList = ({ user }) => {
       newItem.roomId = await Postman.postNewItemRoom(newRoomName);
     }
     if (newItem.categoryId === "newCategory") {
+      newCategory.color = color;
       newItem.categoryId = await Postman.postNewItemCategory(newCategory);
     }
     if (validateInput(newItem)) {
@@ -183,6 +191,8 @@ const ItemList = ({ user }) => {
             handleNewRoomInputChange={handleNewRoomInputChange}
             handleNewCategoryInputChange={handleNewCategoryInputChange}
             fileName={fileName}
+            handleColorChange={handleColorChange}
+            color={color}
           />
         </>
       )}

@@ -23,8 +23,11 @@ const CategoryList = (props) => {
   const [formErrors, setFormErrors] = useState({});
   const [newCategory, setNewCategory] = useState({
     name: "",
-    color: "",
+    color: "#ddd",
     userId: userId,
+  });
+  const [color, setColor] = useState({
+    color: "#ddd",
   });
 
   const getUserData = async () => {
@@ -58,6 +61,7 @@ const CategoryList = (props) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (validateInput(newCategory)) {
+      newCategory.color = color;
       const postedCategory = await Postman.postCategory(newCategory);
       if (postedCategory.responseType === "success") {
         setFormErrors({});
@@ -96,6 +100,10 @@ const CategoryList = (props) => {
   const onInputChange = (event) => {
     event.preventDefault();
     setSearchString(event.currentTarget.value);
+  };
+
+  const handleChange = (color, event) => {
+    setColor(color.hex);
   };
 
   let searchedItems = categoryList.filter((category) => {
@@ -140,6 +148,8 @@ const CategoryList = (props) => {
             formErrors={formErrors}
             handleSubmit={handleSubmit}
             handleInputChange={handleInputChange}
+            handleChange={handleChange}
+            color={color}
           />
         </div>
       )}
