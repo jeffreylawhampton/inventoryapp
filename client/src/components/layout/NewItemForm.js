@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { Link, Redirect } from "react-router-dom";
 import ErrorList from "./ErrorList";
+import { TwitterPicker } from "react-color";
 import Dropzone from "react-dropzone";
 
-import colorSelectors from "../../services/colorSelectors";
+import colors from "../assets/colors";
 import createSelectors from "../../services/createSelectors";
 
 const NewItemForm = ({
@@ -18,9 +19,11 @@ const NewItemForm = ({
   handleImageUpload,
   handleNewRoomInputChange,
   handleNewCategoryInputChange,
+  handleColorChange,
   fileName,
   userCategories,
   userRooms,
+  color,
 }) => {
   const categorySelectors = createSelectors(userCategories);
   const roomSelectors = createSelectors(userRooms);
@@ -109,14 +112,15 @@ const NewItemForm = ({
                     onChange={handleNewCategoryInputChange}
                     placeholder="New category name"
                   ></input>
-                  <select
-                    name="color"
-                    value={newCategory.color}
-                    onChange={handleNewCategoryInputChange}
-                  >
-                    <option value="">Pick a color</option>
-                    {colorSelectors}
-                  </select>
+                  <p className="sample-color" style={{ color: color }}>
+                    Pick a color
+                  </p>
+                  <TwitterPicker
+                    colors={colors}
+                    onChange={handleColorChange}
+                    color={color}
+                    width="auto"
+                  />
                 </>
               )}
             </label>

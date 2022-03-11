@@ -23,9 +23,16 @@ const AccordionTile = (props) => {
     });
   }
 
+  if (!cardObject.color) {
+    cardObject.color = "#688d82";
+  }
+
   return (
     <div className={`accordion-tile`}>
-      <div className={`top-row ${colorClass} ${isOpen ? "noradius" : ""}`}>
+      <div
+        style={{ background: cardObject.color }}
+        className={`top-row ${isOpen ? "noradius" : ""}`}
+      >
         <div className="item-count" onClick={toggle}>
           <p>{itemCount}</p>
           <div className="background"></div>
