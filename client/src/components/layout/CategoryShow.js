@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { withRouter, Redirect, Link } from "react-router-dom";
-import { TwitterPicker } from "react-color";
-import { SliderPicker } from "react-color";
 
 import createSelectors from "../../services/createSelectors.js";
 import colors from "../assets/colors.js";
@@ -9,6 +7,7 @@ import fetchUserData from "../../services/fetchUserData.js";
 import makeObjectAbc from "../../services/makeOjbectsAbc.js";
 import Postman from "../../services/Postman.js";
 
+import ColorPicker from "./ColorPicker.js";
 import EditIcon from "../assets/EditIcon";
 import ItemTile from "./ItemTile";
 import PlusIcon from "./PlusIcon";
@@ -31,7 +30,6 @@ const CategoryShow = (props) => {
   const [searchString, setSearchString] = useState("");
   const [editedItem, setEditedItem] = useState({});
   const [color, setColor] = useState("");
-  const [pickerView, setPickerView] = useState("Twitter");
 
   const getUserData = async () => {
     const userData = await fetchUserData(userId);
@@ -132,12 +130,6 @@ const CategoryShow = (props) => {
     setColor(color.hex);
   };
 
-  const handleTwitterClick = (event) => {
-    setPickerView("Twitter");
-  };
-  const handleSliderClick = (event) => {
-    setPickerView("Slider");
-  };
   let searchedItems = categoryItemsList.filter((listItem) => {
     return (
       listItem.name.toLowerCase().startsWith(searchString) ||
@@ -172,29 +164,9 @@ const CategoryShow = (props) => {
             onChange={changeHandler}
           />
           <div className="formerror">{formErrors.name}</div>
-          <div className="picker-links">
-            <a
-              onClick={handleTwitterClick}
-              className={pickerView === "Twitter" ? "active" : "inactive"}
-            >
-              Pick a color
-            </a>{" "}
-            or
-            <a
-              className={pickerView === "Slider" ? "active" : "inactive"}
-              onClick={handleSliderClick}
-            >
-              choose your own
-            </a>
-          </div>
-          <div className="color-picker">
-            {pickerView === "Twitter" && (
-              <TwitterPicker colors={colors} onChange={handleChange} color={color} width="auto" />
-            )}
-            {pickerView === "Slider" && (
-              <SliderPicker onChange={handleChange} color={color} width="auto" />
-            )}
-          </div>
+
+          <ColorPicker color={color} onChange={handleChange} handleChange={handleChange} />
+
           <div className="button-container">
             <input type="submit" className="button" value="Save changes" />
             <div className="button cancel" onClick={editHandler}>
@@ -208,12 +180,12 @@ const CategoryShow = (props) => {
           )}
         </form>
       ) : (
-        <h1>
-          {category.name}{" "}
-          <span className="edit-icon" onClick={editHandler}>
+        <div className="headline-container">
+          <h1>{category.name}</h1>
+          <div className="icon-container" onClick={editHandler}>
             <EditIcon />
-          </span>
-        </h1>
+          </div>
+        </div>
       )}
 
       <SearchForm placeholder={`Search within ${category.name}`} onInputChange={onInputChange} />

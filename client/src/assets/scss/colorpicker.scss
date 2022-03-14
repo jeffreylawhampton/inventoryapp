@@ -1,0 +1,84 @@
+.swatch-background {
+  width: 100%;
+  max-width: 360px;
+  height: 2em;
+  border-radius: 2px;
+}
+
+.swatch {
+  padding: 3px;
+  max-width: 360px;
+  margin-bottom: 10px;
+  background: #fff;
+  border-radius: 1px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+  display: inline-block;
+  cursor: pointer;
+}
+
+.picker {
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+  text-align: left;
+  gap: 5px;
+  font-weight: 500;
+  font-size: 0.9rem;
+
+  a,
+  a:hover {
+    color: black;
+  }
+}
+
+.sketch-picker {
+  width: 88%;
+  padding: 10px 10px 4px !important;
+  box-sizing: border-box !important;
+  border-radius: 0px !important;
+}
+
+.picker-content {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  -ms-transform: translate(-50%, -50%);
+  -moz-transform: translate(-50%, -50%);
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  width: 100%;
+  max-width: 360px;
+  height: auto;
+  padding: 10px;
+  z-index: 200;
+}
+
+.picker-background {
+  position: fixed;
+  width: 100%;
+  top: 0px;
+  left: 0;
+  margin: 0px;
+  min-height: 200px;
+  height: 100%;
+  background: white;
+  opacity: 95%;
+  z-index: 199;
+}
+
+.picker-wrapper {
+  position: relative;
+  z-index: 91;
+}
+
+.flexbox-fix {
+  div {
+    label {
+      text-align: left !important;
+    }
+    div {
+      border-radius: 1px !important;
+      box-shadow: none !important;
+    }
+  }
+}
