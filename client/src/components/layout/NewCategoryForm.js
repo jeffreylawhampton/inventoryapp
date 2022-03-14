@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { TwitterPicker } from "react-color";
-import { SliderPicker } from "react-color";
+import { SketchPicker } from "react-color";
 
 import colors from "../assets/colors.js";
 
@@ -12,47 +11,56 @@ const NewCategoryForm = ({
   color,
   handleChange,
 }) => {
-  const [pickerView, setPickerView] = useState("Twitter");
+  const [displayColorPicker, setDisplayColorPicker] = useState(false);
+  const handleClose = () => {
+    setDisplayColorPicker(false);
+  };
 
-  const handleTwitterClick = (event) => {
-    setPickerView("Twitter");
+  const handleClick = () => {
+    setDisplayColorPicker(!displayColorPicker);
   };
-  const handleSliderClick = (event) => {
-    setPickerView("Slider");
-  };
+
   return (
     <>
-      <form onSubmit={handleSubmit}>
-        <h3>Add a new category</h3>
+      {displayColorPicker ? (
+        <div className="picker-wrapper">
+          <div
+            style={{
+              background: color,
+            }}
+            className="picker-background"
+            onClick={handleClose}
+          ></div>
 
-        <label>
-          {!formErrors.name && "Name"}
-          <div className="formerror">{formErrors.name}</div>
-          <input type="text" name="name" value={newCategory.name} onChange={handleInputChange} />
-        </label>
-
-        <div className="picker-links">
-          <a onClick={handleTwitterClick}>Pick a color</a> or
-          <a onClick={handleSliderClick}>choose your own</a>
-        </div>
-        <div className="color-picker">
-          {pickerView === "Twitter" && (
-            <TwitterPicker
-              colors={colors}
-              triangle={"hide"}
-              onChange={handleChange}
+          <div className="picker-content">
+            <SketchPicker
               color={color}
-              width="auto"
+              onChange={handleChange}
+              presetColors={colors}
+              width={"100%"}
+              disableAlpha={true}
             />
-          )}
-          {pickerView === "Slider" && (
-            <SliderPicker onChange={handleChange} color={color} width="auto" />
-          )}
+          </div>
         </div>
-
-        <span className="formerror">{formErrors.category}</span>
-        <input type="submit" className="button" value="Submit" />
-      </form>
+      ) : null}
+      <div className="form-modal">
+        <form onSubmit={handleSubmit}>
+          <h3>Add a new category</h3>
+          <label>
+            {!formErrors.name && "Name"}
+            <div className="formerror">{formErrors.name}</div>
+            <input type="text" name="name" value={newCategory.name} onChange={handleInputChange} />
+          </label>{" "}
+          <div className="picker">
+            <a onClick={handleClick}>Color</a>
+            <div className="swatch" onClick={handleClick}>
+              <div className="swatch-background" style={{ background: color }} />
+            </div>
+          </div>
+          <span className="formerror">{formErrors.category}</span>
+          <input type="submit" className="button" value="Submit" />
+        </form>
+      </div>
     </>
   );
 };

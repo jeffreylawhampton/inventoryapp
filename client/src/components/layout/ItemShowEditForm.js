@@ -92,7 +92,7 @@ const ItemShowEditForm = ({
           {formErrors.categoryId}
         </label>
       </div>
-      <div className="button-group">
+      <div className="button-container">
         <input type="submit" className="button" value="Save changes" />
         <input type="button" className="cancel button" onClick={cancelHandler} value="Cancel" />
       </div>

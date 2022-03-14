@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { withRouter, Redirect, Link } from "react-router-dom";
+import { withRouter, Redirect } from "react-router-dom";
 
 import createSelectors from "../../services/createSelectors";
 import fetchUserData from "../../services/fetchUserData";
@@ -9,7 +9,6 @@ import Teller from "../../services/Teller";
 
 import EditIcon from "../assets/EditIcon";
 import ItemShowEditForm from "./ItemShowEditForm";
-import PlusIcon from "./PlusIcon";
 
 const ItemShow = (props) => {
   const itemId = props.match.params.id;
@@ -158,105 +157,107 @@ const ItemShow = (props) => {
   }
 
   return (
-    <div className="item-show-container grid-x grid-margin-x">
-      <div className="item-info cell small-12 medium-6">
-        {showEditForm ? (
-          <ItemShowEditForm
-            user={user}
-            roomSelectors={roomSelectors}
-            submitHandler={submitHandler}
-            changeHandler={changeHandler}
-            cancelHandler={cancelHandler}
-            deleteHandler={deleteHandler}
-            editedItem={editedItem}
-            formErrors={formErrors}
-            errors={errors}
-            categorySelectors={categorySelectors}
-            handleImageUpload={handleImageUpload}
-            fileName={fileName}
-          />
-        ) : (
-          <h1>
-            {item.name}{" "}
-            <span className="edit-icon" onClick={editHandler}>
-              <EditIcon />
-            </span>
-          </h1>
-        )}
-
-        {!showEditForm && (
-          <>
-            <p>{item.description}</p>
-
-            <p className="marg0">
-              <strong>Current location:</strong>
-            </p>
-            {!showEditLocationForm && (
-              <p className="location">
-                {!itemRoom && <>The void of space</>}
-                {itemRoom && itemRoom}
-                <a className="edit-location-link" onClick={locationEditHandler}>
-                  Move
-                </a>
-              </p>
-            )}
-          </>
-        )}
-
-        {showEditLocationForm && (
-          <div className="location-form">
-            <form onSubmit={locationSubmitHandler}>
-              <select name="roomId" value={editedItem.roomId} onChange={changeHandler}>
-                <option value="" className="disabled" disabled>
-                  Pick a room, any room
-                </option>
-                {roomSelectors}
-              </select>
-
-              <div className="button-group">
-                <input type="submit" value="Move it!" className="button" />
-                <div className="button cancel" onClick={locationEditHandler}>
-                  Cancel
-                </div>
+    <>
+      <div className="item-show-container grid-x grid-margin-x">
+        <div className="item-info cell small-12 medium-6">
+          {showEditForm ? (
+            <ItemShowEditForm
+              user={user}
+              roomSelectors={roomSelectors}
+              submitHandler={submitHandler}
+              changeHandler={changeHandler}
+              cancelHandler={cancelHandler}
+              deleteHandler={deleteHandler}
+              editedItem={editedItem}
+              formErrors={formErrors}
+              errors={errors}
+              categorySelectors={categorySelectors}
+              handleImageUpload={handleImageUpload}
+              fileName={fileName}
+            />
+          ) : (
+            <div className="headline-container">
+              <h1>{item.name}</h1>
+              <div className="icon-container" onClick={editHandler}>
+                <EditIcon />
               </div>
-            </form>
-          </div>
-        )}
+            </div>
+          )}
 
-        {!showEditForm && (
-          <>
-            <p>
-              <strong>Category:</strong>{" "}
-              <Link to={`/categories/${item.categoryId}`}>{item.category}</Link>
-            </p>
-            {item.quantity > 0 ? (
-              <p>
-                <strong>Quantity:</strong> {item.quantity}
+          {!showEditForm && (
+            <>
+              <p>{item.description}</p>
+              <p className="marg0">
+                <strong>Current location:</strong>
               </p>
-            ) : (
-              ""
-            )}
-            {item.unitCost > 0 ? (
-              <p>
-                <strong>Unit cost:</strong> {displayCost}
+              {!showEditLocationForm && (
+                <p className="location">
+                  {!itemRoom && <>The void of space</>}
+                  {itemRoom && itemRoom}
+                  <a className="edit-location-link" onClick={locationEditHandler}>
+                    Move
+                  </a>
+                </p>
+              )}
+            </>
+          )}
+
+          {showEditLocationForm && (
+            <div className="location-form">
+              <form onSubmit={locationSubmitHandler}>
+                <select name="roomId" value={editedItem.roomId} onChange={changeHandler}>
+                  <option value="" className="disabled" disabled>
+                    Pick a room, any room
+                  </option>
+                  {roomSelectors}
+                </select>
+
+                <div className="button-container">
+                  <input type="submit" value="Move it!" className="button" />
+                  <div className="button cancel" onClick={locationEditHandler}>
+                    Cancel
+                  </div>
+                </div>
+              </form>
+            </div>
+          )}
+
+          {!showEditForm && (
+            <>
+              <p className="show-p">
+                <strong>Category:</strong> {item.category}
               </p>
-            ) : (
-              ""
-            )}
-            {item.quantity > 1 ? (
-              <p>
-                <strong>Total value:</strong> {displayValue}
-              </p>
-            ) : (
-              ""
-            )}
-          </>
-        )}
+              {item.quantity > 1 ? (
+                <p className="show-p">
+                  <strong>Quantity:</strong> {item.quantity}
+                </p>
+              ) : (
+                ""
+              )}
+              {item.unitCost > 0 ? (
+                <p className="show-p">
+                  <strong>Unit cost:</strong> {displayCost}
+                </p>
+              ) : (
+                ""
+              )}
+              {item.quantity > 1 ? (
+                <p className="show-p">
+                  <strong>Total value:</strong> {displayValue}
+                </p>
+              ) : (
+                ""
+              )}
+            </>
+          )}
+        </div>
+        <div className="item-image cell small-12 medium-6">
+          {item.image && item.image !== "[object Object]" ? (
+            <img src={item.image} alt={item.name} />
+          ) : null}
+        </div>
       </div>
-      <div className="item-image cell small-12 medium-6">
-        <img src={item.image ? item.image : ""} />
-      </div>
-    </div>
+    </>
   );
 };
 

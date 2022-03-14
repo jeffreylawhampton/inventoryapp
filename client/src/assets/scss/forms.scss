@@ -11,39 +11,6 @@ input[type="text"].h1-input {
   width: 100%;
 }
 
-.twitter-picker {
-  border: 0 !important;
-  box-shadow: none !important;
-  margin: 0 -15px;
-  background: transparent !important;
-}
-.slider-picker {
-  margin: 25px 0px 27px;
-}
-.picker-links {
-  font-size: 1rem;
-  margin-bottom: 0px;
-  margin-top: 10px;
-  display: flex;
-  font-weight: 600;
-  gap: 10px;
-
-  a {
-    color: var(--steel);
-
-    &:hover {
-      color: var(--flat-blue);
-    }
-  }
-}
-
-.color-picker {
-  margin-top: 0px;
-  padding: 0px;
-  border-radius: 4px;
-  height: fit-content;
-}
-
 .name-edit-form {
   max-width: 700px;
   margin-bottom: 40px;
@@ -66,11 +33,10 @@ input[type="text"].h1-input {
     }
 
     .button.cancel {
-      color: black;
-      background: var(--dark-yellow);
+      background: var(--mauve);
 
       &:hover {
-        background: var(--yellow);
+        background: var(--maroon);
       }
     }
   }
@@ -115,17 +81,13 @@ input[type="text"].h1-input {
   left: 60px;
   bottom: 55px;
   margin: auto;
-  z-index: 90;
+  z-index: 69;
   background: #f5f5f5;
   padding: 30px;
   width: 100%;
   height: fit-content;
   max-width: 400px;
   box-shadow: 1px 2px 2px rgba(0, 0, 0, 0.2);
-
-  label {
-    font-weight: 500;
-  }
 
   .button {
     width: 100%;
@@ -163,10 +125,6 @@ input[type="text"].h1-input {
   stroke-linejoin: round;
 }
 
-#edit-icon {
-  width: 30px;
-}
-
 .card-link {
   display: block;
   height: 100%;
@@ -185,7 +143,7 @@ input[type="text"].h1-input {
   text-align: center;
   align-items: center;
   justify-content: center;
-  z-index: 98;
+  z-index: 90;
 
   &:hover {
     background: var(--honey);
@@ -327,19 +285,10 @@ input[type="text"].h1-input {
       margin-right: 10px;
     }
   }
-  div {
-    flex-basis: 100%;
-    flex-shrink: 1;
-  }
 }
 
 .hidden {
   display: none;
-}
-
-p.sample-color {
-  font-size: 1.1rem;
-  font-weight: 600;
 }
 
 .form-wrapper {
@@ -408,13 +357,19 @@ p.sample-color {
   }
 }
 
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  box-shadow: none;
+}
+
 @media (max-width: 700px) {
   .form-modal {
     position: fixed;
     left: 0px;
     bottom: 50px;
     margin: auto;
-    z-index: 90;
+    z-index: 89;
     background: #f5f5f5;
     padding: 30px;
     width: 100%;

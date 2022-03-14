@@ -177,12 +177,12 @@ const RoomShow = (props) => {
           )}
         </form>
       ) : (
-        <h1>
-          {room.name}{" "}
-          <span className="edit-icon" onClick={editHandler}>
+        <div className="headline-container">
+          <h1>{room.name}</h1>
+          <div className="icon-container" onClick={editHandler}>
             <EditIcon />
-          </span>
-        </h1>
+          </div>
+        </div>
       )}
 
       {!showItemEditForm && subhead}

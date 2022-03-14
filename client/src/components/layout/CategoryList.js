@@ -23,11 +23,11 @@ const CategoryList = (props) => {
   const [formErrors, setFormErrors] = useState({});
   const [newCategory, setNewCategory] = useState({
     name: "",
-    color: "#ddd",
+    color: "",
     userId: userId,
   });
   const [color, setColor] = useState({
-    color: "#ddd",
+    color: "#fff",
   });
 
   const getUserData = async () => {
@@ -94,6 +94,7 @@ const CategoryList = (props) => {
   const categoryClickHandler = (event) => {
     event.preventDefault();
     clearForm();
+    setColor("#fff");
     setShowNewCategoryForm(!showNewCategoryForm);
   };
 
@@ -141,17 +142,16 @@ const CategoryList = (props) => {
       <div onClick={categoryClickHandler} className="circle-button-container">
         <PlusIcon iconPosition={showNewCategoryForm ? "x" : "plus"} />
       </div>
+
       {showNewCategoryForm && (
-        <div className="form-modal">
-          <NewCategoryForm
-            newCategory={newCategory}
-            formErrors={formErrors}
-            handleSubmit={handleSubmit}
-            handleInputChange={handleInputChange}
-            handleChange={handleChange}
-            color={color}
-          />
-        </div>
+        <NewCategoryForm
+          newCategory={newCategory}
+          formErrors={formErrors}
+          handleSubmit={handleSubmit}
+          handleInputChange={handleInputChange}
+          handleChange={handleChange}
+          color={color}
+        />
       )}
     </div>
   );

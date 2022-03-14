@@ -1,11 +1,9 @@
 import React, { useState } from "react";
 import { Link, Redirect } from "react-router-dom";
 import ErrorList from "./ErrorList";
-import { TwitterPicker } from "react-color";
-import { SliderPicker } from "react-color";
+import ColorPicker from "./ColorPicker";
 import Dropzone from "react-dropzone";
 
-import colors from "../assets/colors";
 import createSelectors from "../../services/createSelectors";
 
 const NewItemForm = ({
@@ -26,15 +24,9 @@ const NewItemForm = ({
   userRooms,
   color,
 }) => {
-  const [pickerView, setPickerView] = useState("Twitter");
   const categorySelectors = createSelectors(userCategories);
   const roomSelectors = createSelectors(userRooms);
-  const handleTwitterClick = (event) => {
-    setPickerView("Twitter");
-  };
-  const handleSliderClick = (event) => {
-    setPickerView("Slider");
-  };
+
   return (
     <>
       <div className="form-wrapper">
@@ -113,31 +105,16 @@ const NewItemForm = ({
               </select>
               {newItem.categoryId === "newCategory" && (
                 <>
-                  <input
-                    type="text"
-                    name="name"
-                    value={newCategory.name}
-                    onChange={handleNewCategoryInputChange}
-                    placeholder="New category name"
-                  ></input>
-                  <div className="picker-links">
-                    <a onClick={handleTwitterClick}>Pick a color</a> or
-                    <a onClick={handleSliderClick}>choose your own</a>
-                  </div>
-                  <div className="color-picker">
-                    {pickerView === "Twitter" && (
-                      <TwitterPicker
-                        colors={colors}
-                        triangle={"hide"}
-                        onChange={handleColorChange}
-                        color={color}
-                        width="auto"
-                      />
-                    )}
-                    {pickerView === "Slider" && (
-                      <SliderPicker onChange={handleColorChange} color={color} width="auto" />
-                    )}
-                  </div>
+                  <label>
+                    New category name
+                    <input
+                      type="text"
+                      name="name"
+                      value={newCategory.name}
+                      onChange={handleNewCategoryInputChange}
+                    ></input>
+                  </label>
+                  <ColorPicker handleChange={handleColorChange} color={color} />
                 </>
               )}
             </label>
@@ -152,16 +129,19 @@ const NewItemForm = ({
                 <option value="newRoom">Create new room</option>
               </select>
               {newItem.roomId === "newRoom" && (
-                <input
-                  type="text"
-                  name="name"
-                  value={newRoomName.name}
-                  onChange={handleNewRoomInputChange}
-                  placeholder="New room name"
-                ></input>
+                <label>
+                  New room name
+                  <input
+                    type="text"
+                    name="name"
+                    value={newRoomName.name}
+                    onChange={handleNewRoomInputChange}
+                  ></input>
+                </label>
               )}
             </label>
           </div>
+
           <div className="button-group">
             <input type="submit" value="Submit" className="button" />
             <div className="cancel button" onClick={itemClickHandler}>

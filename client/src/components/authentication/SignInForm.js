@@ -75,7 +75,7 @@ const SignInForm = () => {
           <form className="register" onSubmit={onSubmit}>
             <div>
               <input
-                type="text"
+                type="email"
                 name="email"
                 placeholder="Email"
                 value={userPayload.email}
