@@ -100,23 +100,9 @@ const NewItemForm = ({
                 <option value="" className="disabled" disabled>
                   Select a category
                 </option>
-                {categorySelectors}
                 <option value="newCategory">Create new category</option>
+                {categorySelectors}
               </select>
-              {newItem.categoryId === "newCategory" && (
-                <>
-                  <label>
-                    New category name
-                    <input
-                      type="text"
-                      name="name"
-                      value={newCategory.name}
-                      onChange={handleNewCategoryInputChange}
-                    ></input>
-                  </label>
-                  <ColorPicker handleChange={handleColorChange} color={color} />
-                </>
-              )}
             </label>
 
             <label>
@@ -125,9 +111,27 @@ const NewItemForm = ({
                 <option value="" className="disabled" disabled>
                   Select a room
                 </option>
-                {roomSelectors}
                 <option value="newRoom">Create new room</option>
+                {roomSelectors}
               </select>
+            </label>
+          </div>
+
+          <div className="newcat">
+            <div className="half">
+              {newItem.categoryId === "newCategory" && (
+                <label>
+                  New category name
+                  <input
+                    type="text"
+                    name="name"
+                    value={newCategory.name}
+                    onChange={handleNewCategoryInputChange}
+                  ></input>
+                </label>
+              )}
+            </div>
+            <div className="half">
               {newItem.roomId === "newRoom" && (
                 <label>
                   New room name
@@ -139,9 +143,14 @@ const NewItemForm = ({
                   ></input>
                 </label>
               )}
-            </label>
+            </div>
           </div>
 
+          {newItem.categoryId === "newCategory" && (
+            <div className="halfwidth">
+              <ColorPicker handleChange={handleColorChange} color={color} />
+            </div>
+          )}
           <div className="button-group">
             <input type="submit" value="Submit" className="button" />
             <div className="cancel button" onClick={itemClickHandler}>
